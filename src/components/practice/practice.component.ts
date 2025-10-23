@@ -3,7 +3,6 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import type { Topic, VocabularyItem, PracticeAttempt } from '../../models/vocabulary.model';
 import { DataService } from '../../services/data.service';
 import { GeminiService } from '../../services/gemini.service';
-import { TranslationService } from '../../services/translation.service';
 
 interface QuizQuestion {
   type: 'mcq' | 'fill-in-the-blank';
@@ -30,7 +29,6 @@ export class PracticeComponent implements OnInit {
   private dataService = inject(DataService);
   private geminiService = inject(GeminiService);
   private platformId = inject(PLATFORM_ID);
-  public translationService = inject(TranslationService);
   
   quizState = signal<QuizState>('generating');
   questions = signal<QuizQuestion[]>([]);

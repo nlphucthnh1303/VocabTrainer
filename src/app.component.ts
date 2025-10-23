@@ -5,7 +5,6 @@ import { TopicViewComponent } from './components/topic-view/topic-view.component
 import { FlashcardsComponent } from './components/flashcards/flashcards.component';
 import { PracticeComponent } from './components/practice/practice.component';
 import { DataService } from './services/data.service';
-import { TranslationService, type Language } from './services/translation.service';
 import type { Topic } from './models/vocabulary.model';
 
 export type View = 'dashboard' | 'topic' | 'flashcards' | 'practice';
@@ -21,7 +20,6 @@ export class AppComponent {
   private dataService = inject(DataService);
   private renderer = inject(Renderer2);
   private platformId = inject(PLATFORM_ID);
-  public translationService = inject(TranslationService);
   
   currentView = signal<View>('dashboard');
   selectedTopicId = signal<string | null>(null);
@@ -63,10 +61,6 @@ export class AppComponent {
 
   toggleTheme() {
     this.isDarkMode.update(value => !value);
-  }
-
-  changeLanguage(lang: Language) {
-    this.translationService.setLanguage(lang);
   }
 
   navigateTo(view: View, topicId: string | null = null) {

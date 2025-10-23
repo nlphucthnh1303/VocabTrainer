@@ -24,18 +24,18 @@
             <p class="mt-1 text-slate-500 dark:text-slate-400">{{ t.description }}</p>
         </div>
         <div class="flex items-center gap-3">
-          <button (click)="startPractice.emit()" class="px-4 py-2 bg-primary-600 text-white font-semibold rounded-lg shadow-md hover:bg-primary-700 transition-colors">{{ translationService.translate('startPractice') }}</button>
-          <button (click)="startFlashcards.emit()" class="px-4 py-2 bg-slate-600 text-white font-semibold rounded-lg shadow-md hover:bg-slate-700 transition-colors">{{ translationService.translate('flashcardMode') }}</button>
+          <button (click)="startPractice.emit()" class="px-4 py-2 bg-primary-600 text-white font-semibold rounded-lg shadow-md hover:bg-primary-700 transition-colors">Start Practice</button>
+          <button (click)="startFlashcards.emit()" class="px-4 py-2 bg-slate-600 text-white font-semibold rounded-lg shadow-md hover:bg-slate-700 transition-colors">Flashcard Mode</button>
         </div>
     </div>
     
     <!-- Vocabulary List -->
     <div class="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6">
         <div class="flex justify-between items-center mb-4">
-            <h3 class="text-xl font-bold text-slate-900 dark:text-white">{{ translationService.translate('vocabList') }} ({{ t.vocabularies.length }})</h3>
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white">Vocabulary List ({{ t.vocabularies.length }})</h3>
             <div class="flex gap-2">
-                <button (click)="isImportModalOpen.set(true)" class="px-3 py-2 text-sm bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 font-semibold rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">{{ translationService.translate('importFromExcel') }}</button>
-                <button (click)="openVocabModal()" class="px-3 py-2 text-sm bg-primary-600 text-white font-semibold rounded-lg shadow-sm hover:bg-primary-700 transition-colors">{{ translationService.translate('addWord') }}</button>
+                <button (click)="isImportModalOpen.set(true)" class="px-3 py-2 text-sm bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 font-semibold rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">Import from Excel</button>
+                <button (click)="openVocabModal()" class="px-3 py-2 text-sm bg-primary-600 text-white font-semibold rounded-lg shadow-sm hover:bg-primary-700 transition-colors">Add Word</button>
             </div>
         </div>
         
@@ -43,11 +43,11 @@
             <table class="w-full text-sm text-left text-slate-500 dark:text-slate-400">
                 <thead class="text-xs text-slate-700 uppercase bg-slate-50 dark:bg-slate-700 dark:text-slate-300">
                     <tr>
-                        <th scope="col" class="px-6 py-3">{{ translationService.translate('word') }}</th>
-                        <th scope="col" class="px-6 py-3">{{ translationService.translate('phonetic') }}</th>
-                        <th scope="col" class="px-6 py-3">{{ translationService.translate('partOfSpeech') }}</th>
-                        <th scope="col" class="px-6 py-3">{{ translationService.translate('meaning') }}</th>
-                        <th scope="col" class="px-6 py-3"><span class="sr-only">{{ translationService.translate('actions') }}</span></th>
+                        <th scope="col" class="px-6 py-3">Word</th>
+                        <th scope="col" class="px-6 py-3">Phonetic</th>
+                        <th scope="col" class="px-6 py-3">Part of Speech</th>
+                        <th scope="col" class="px-6 py-3">Meaning</th>
+                        <th scope="col" class="px-6 py-3"><span class="sr-only">Actions</span></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -58,15 +58,15 @@
                             <td class="px-6 py-4">{{ item.partOfSpeech }}</td>
                             <td class="px-6 py-4">{{ item.meaning }}</td>
                             <td class="px-6 py-4 text-right">
-                                <button (click)="openVocabModal(item)" class="font-medium text-primary-600 dark:text-primary-400 hover:underline mr-3">{{ translationService.translate('edit') }}</button>
-                                <button (click)="deleteItem(item.id)" class="font-medium text-red-600 dark:text-red-400 hover:underline">{{ translationService.translate('delete') }}</button>
+                                <button (click)="openVocabModal(item)" class="font-medium text-primary-600 dark:text-primary-400 hover:underline mr-3">Edit</button>
+                                <button (click)="deleteItem(item.id)" class="font-medium text-red-600 dark:text-red-400 hover:underline">Delete</button>
                             </td>
                         </tr>
                     }
                 </tbody>
             </table>
             @if(t.vocabularies.length === 0) {
-              <p class="text-center py-8 text-slate-500 dark:text-slate-400">{{ translationService.translate('noWords') }}</p>
+              <p class="text-center py-8 text-slate-500 dark:text-slate-400">No words in this topic yet. Add one to get started!</p>
             }
         </div>
 
@@ -74,14 +74,14 @@
         @if (totalPages() > 1) {
             <div class="flex items-center justify-between pt-4">
                 <span class="text-sm text-slate-700 dark:text-slate-400">
-                    {{ translationService.translate('page') }} <span class="font-semibold">{{ currentPage() }}</span> {{ translationService.translate('of') }} <span class="font-semibold">{{ totalPages() }}</span>
+                    Page <span class="font-semibold">{{ currentPage() }}</span> of <span class="font-semibold">{{ totalPages() }}</span>
                 </span>
                 <div class="inline-flex mt-2 xs:mt-0">
                     <button (click)="goToPage(currentPage() - 1)" [disabled]="currentPage() === 1" class="px-4 py-2 text-sm font-medium text-white bg-slate-800 rounded-l hover:bg-slate-900 dark:bg-slate-600 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed">
-                        {{ translationService.translate('prev') }}
+                        Prev
                     </button>
                     <button (click)="goToPage(currentPage() + 1)" [disabled]="currentPage() === totalPages()" class="px-4 py-2 text-sm font-medium text-white bg-slate-800 border-0 border-l border-slate-700 rounded-r hover:bg-slate-900 dark:bg-slate-600 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed">
-                        {{ translationService.translate('next') }}
+                        Next
                     </button>
                 </div>
             </div>
@@ -94,29 +94,29 @@
   @if (isVocabModalOpen()) {
     <div class="fixed inset-0 bg-black/60 z-40 flex items-center justify-center animate-fade-in" (click)="closeVocabModal()">
       <div (click)="$event.stopPropagation()" class="bg-white dark:bg-slate-800 rounded-lg shadow-2xl p-6 w-full max-w-lg mx-4 animate-scale-in">
-        <h3 class="text-xl font-bold mb-4">{{ editingItem() ? translationService.translate('editWordTitle') : translationService.translate('addWordTitle') }}</h3>
+        <h3 class="text-xl font-bold mb-4">{{ editingItem() ? 'Edit Word' : 'Add New Word' }}</h3>
         <form (ngSubmit)="saveItem()">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label for="vocab-word" class="block text-sm font-medium text-slate-700 dark:text-slate-300">{{ translationService.translate('word') }}</label>
+              <label for="vocab-word" class="block text-sm font-medium text-slate-700 dark:text-slate-300">Word</label>
               <input id="vocab-word" type="text" [value]="word()" (input)="word.set($event.target.value)" required class="mt-1 block w-full rounded-md border-slate-300 dark:border-slate-600 dark:bg-slate-700 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
             </div>
             <div>
-              <label for="vocab-phonetic" class="block text-sm font-medium text-slate-700 dark:text-slate-300">{{ translationService.translate('phonetic') }}</label>
+              <label for="vocab-phonetic" class="block text-sm font-medium text-slate-700 dark:text-slate-300">Phonetic</label>
               <input id="vocab-phonetic" type="text" [value]="phonetic()" (input)="phonetic.set($event.target.value)" class="mt-1 block w-full rounded-md border-slate-300 dark:border-slate-600 dark:bg-slate-700 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
             </div>
             <div>
-              <label for="vocab-pos" class="block text-sm font-medium text-slate-700 dark:text-slate-300">{{ translationService.translate('partOfSpeech') }}</label>
+              <label for="vocab-pos" class="block text-sm font-medium text-slate-700 dark:text-slate-300">Part of Speech</label>
               <input id="vocab-pos" type="text" [value]="partOfSpeech()" (input)="partOfSpeech.set($event.target.value)" class="mt-1 block w-full rounded-md border-slate-300 dark:border-slate-600 dark:bg-slate-700 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
             </div>
             <div>
-              <label for="vocab-meaning" class="block text-sm font-medium text-slate-700 dark:text-slate-300">{{ translationService.translate('meaning') }}</label>
+              <label for="vocab-meaning" class="block text-sm font-medium text-slate-700 dark:text-slate-300">Meaning</label>
               <input id="vocab-meaning" type="text" [value]="meaning()" (input)="meaning.set($event.target.value)" required class="mt-1 block w-full rounded-md border-slate-300 dark:border-slate-600 dark:bg-slate-700 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
             </div>
           </div>
           <div class="mt-6 flex justify-end gap-3">
-            <button type="button" (click)="closeVocabModal()" class="px-4 py-2 bg-slate-200 dark:bg-slate-600 text-slate-800 dark:text-slate-200 font-semibold rounded-lg hover:bg-slate-300 dark:hover:bg-slate-500 transition-colors">{{ translationService.translate('cancel') }}</button>
-            <button type="submit" class="px-4 py-2 bg-primary-600 text-white font-semibold rounded-lg shadow-md hover:bg-primary-700 transition-colors">{{ translationService.translate('saveWord') }}</button>
+            <button type="button" (click)="closeVocabModal()" class="px-4 py-2 bg-slate-200 dark:bg-slate-600 text-slate-800 dark:text-slate-200 font-semibold rounded-lg hover:bg-slate-300 dark:hover:bg-slate-500 transition-colors">Cancel</button>
+            <button type="submit" class="px-4 py-2 bg-primary-600 text-white font-semibold rounded-lg shadow-md hover:bg-primary-700 transition-colors">Save Word</button>
           </div>
         </form>
       </div>
@@ -127,9 +127,9 @@
   @if (isImportModalOpen()) {
     <div class="fixed inset-0 bg-black/60 z-40 flex items-center justify-center animate-fade-in" (click)="isImportModalOpen.set(false)">
       <div (click)="$event.stopPropagation()" class="bg-white dark:bg-slate-800 rounded-lg shadow-2xl p-6 w-full max-w-lg mx-4 animate-scale-in">
-        <h3 class="text-xl font-bold mb-4">{{ translationService.translate('importModalTitle') }}</h3>
+        <h3 class="text-xl font-bold mb-4">Import from Excel</h3>
         <p class="text-sm text-slate-600 dark:text-slate-400 mb-4">
-          {{ translationService.translate('importModalDesc') }}
+          Select an .xlsx file with your vocabulary. The file must have four columns in this exact order: 
           <code class="font-mono text-xs bg-slate-100 dark:bg-slate-700 p-1 rounded">Word</code>, 
           <code class="font-mono text-xs bg-slate-100 dark:bg-slate-700 p-1 rounded">Phonetic</code>, 
           <code class="font-mono text-xs bg-slate-100 dark:bg-slate-700 p-1 rounded">Part of Speech</code>, and 
@@ -138,17 +138,17 @@
         <div class="mt-4">
             <label class="block w-full cursor-pointer bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 border-2 border-dashed border-slate-300 dark:border-slate-500 rounded-lg p-8 text-center">
                 <svg class="mx-auto h-12 w-12 text-slate-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-                <span class="mt-2 block text-sm font-semibold text-slate-900 dark:text-slate-100">{{ translationService.translate('importModalUpload') }}</span>
+                <span class="mt-2 block text-sm font-semibold text-slate-900 dark:text-slate-100">Click to upload a file</span>
                 <input type="file" (change)="handleFileImport($event)" accept=".xlsx" class="sr-only">
             </label>
         </div>
         <div class="mt-6 flex justify-end">
-            <button type="button" (click)="isImportModalOpen.set(false)" class="px-4 py-2 bg-slate-200 dark:bg-slate-600 text-slate-800 dark:text-slate-200 font-semibold rounded-lg hover:bg-slate-300 dark:hover:bg-slate-500 transition-colors">{{ translationService.translate('cancel') }}</button>
+            <button type="button" (click)="isImportModalOpen.set(false)" class="px-4 py-2 bg-slate-200 dark:bg-slate-600 text-slate-800 dark:text-slate-200 font-semibold rounded-lg hover:bg-slate-300 dark:hover:bg-slate-500 transition-colors">Cancel</button>
         </div>
       </div>
     </div>
   }
 
 } @else {
-  <p class="text-center p-8">{{ translationService.translate('topicNotFound') }}</p>
+  <p class="text-center p-8">Topic not found.</p>
 }

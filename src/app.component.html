@@ -5,31 +5,19 @@
         <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary-600" viewBox="0 0 20 20" fill="currentColor">
           <path d="M10.394 2.08a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
         </svg>
-        <h1 class="text-2xl font-bold text-primary-600">{{ translationService.translate('appTitle') }}</h1>
+        <h1 class="text-2xl font-bold text-primary-600">Vocabulary Trainer</h1>
       </div>
-      <div class="flex items-center gap-2">
-        <!-- Language Switcher -->
-        <button (click)="changeLanguage('vi')" [class.opacity-50]="translationService.currentLang() !== 'vi'" class="p-1 rounded-full hover:opacity-100 transition-opacity" title="Tiếng Việt">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 rounded-full" viewBox="0 0 900 600"><path fill="#da251d" d="M0 0h900v600H0z"/><path fill="#ff0" d="m450 183-58.8 181.7h184.4L391.2 183h.1l-58.7 181.7-117-112.3H400l-117 112.2L166 364.7h184.4l-58.7-181.7 76.1 140-117-112.2h184.4L450 183l76.2 140 76.1-140-58.7 181.7h184.4L523.9 252.5l-117 112.2L524 252.5l76 140h-184.4L391.2 183l-58.8 181.7 141.6-87.3-117 112.3h184.4z"/></svg>
-        </button>
-        <button (click)="changeLanguage('en')" [class.opacity-50]="translationService.currentLang() !== 'en'" class="p-1 rounded-full hover:opacity-100 transition-opacity" title="English">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 rounded-full" viewBox="0 0 512 512"><path fill="#fff" d="M0 0h512v512H0z"/><path fill="#0052b4" d="M0 0h512v256H0z"/><path fill="#d80027" d="M0 256h512v256H0z"/><path fill="#fff" d="M256 128 112 384h288L256 128z"/><path fill="#0052b4" d="m256 160 108 160H148l108-160z"/></svg>
-        </button>
-        
-        <div class="w-px h-6 bg-slate-200 dark:bg-slate-700 mx-2"></div>
-
-        <button (click)="toggleTheme()" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
-          @if (isDarkMode()) {
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-            </svg>
-          } @else {
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-            </svg>
-          }
-        </button>
-      </div>
+      <button (click)="toggleTheme()" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+        @if (isDarkMode()) {
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+        } @else {
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+          </svg>
+        }
+      </button>
     </div>
   </header>
 
@@ -40,7 +28,7 @@
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>
-              {{ translationService.translate('backToDashboard') }}
+              Back to Dashboard
           </button>
       </div>
     }

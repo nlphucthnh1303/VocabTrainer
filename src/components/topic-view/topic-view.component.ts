@@ -1,6 +1,5 @@
 import { Component, ChangeDetectionStrategy, input, output, signal, computed, inject } from '@angular/core';
 import { DataService } from '../../services/data.service';
-import { TranslationService } from '../../services/translation.service';
 import type { Topic, VocabularyItem } from '../../models/vocabulary.model';
 
 @Component({
@@ -11,7 +10,6 @@ import type { Topic, VocabularyItem } from '../../models/vocabulary.model';
 })
 export class TopicViewComponent {
   dataService = inject(DataService);
-  public translationService = inject(TranslationService);
   
   topicId = input.required<string | null>();
   
@@ -90,7 +88,7 @@ export class TopicViewComponent {
   }
 
   deleteItem(itemId: string) {
-    if (confirm(this.translationService.translate('deleteWordConfirm'))) {
+    if (confirm('Are you sure you want to delete this word? Its practice history will also be removed.')) {
       this.dataService.deleteVocabularyItem(this.topicId()!, itemId);
     }
   }

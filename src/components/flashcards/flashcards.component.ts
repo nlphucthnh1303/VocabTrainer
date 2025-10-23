@@ -1,6 +1,5 @@
 import { Component, ChangeDetectionStrategy, input, signal, computed, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { TranslationService } from '../../services/translation.service';
 import type { Topic, VocabularyItem } from '../../models/vocabulary.model';
 
 @Component({
@@ -11,7 +10,6 @@ import type { Topic, VocabularyItem } from '../../models/vocabulary.model';
 })
 export class FlashcardsComponent {
   topic = input.required<Topic>();
-  public translationService = inject(TranslationService);
 
   private platformId = inject(PLATFORM_ID);
   

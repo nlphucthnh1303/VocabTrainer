@@ -3,7 +3,7 @@
     <!-- Progress Indicator -->
     <div class="w-full max-w-xl">
       <p class="text-center font-semibold text-slate-600 dark:text-slate-400">
-        {{ translationService.translate('card') }} {{ currentIndex() + 1 }} {{ translationService.translate('of') }} {{ topic().vocabularies.length }}
+        Card {{ currentIndex() + 1 }} of {{ topic().vocabularies.length }}
       </p>
       <div class="mt-2 w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
         <div class="bg-primary-600 h-2 rounded-full transition-all duration-300" 
@@ -40,7 +40,7 @@
     <!-- Controls -->
     <div class="flex items-center justify-center gap-4 w-full max-w-xl">
       <button (click)="$event.stopPropagation(); prevCard()" class="px-8 py-3 font-bold text-white bg-slate-500 rounded-lg shadow-md hover:bg-slate-600 transition-colors">
-        {{ translationService.translate('previous') }}
+        Previous
       </button>
       
       <button (click)="$event.stopPropagation(); speak()" title="Pronounce word" class="p-4 bg-white dark:bg-slate-700 rounded-full shadow-lg hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors">
@@ -50,13 +50,13 @@
       </button>
 
       <button (click)="$event.stopPropagation(); nextCard()" class="px-8 py-3 font-bold text-white bg-slate-500 rounded-lg shadow-md hover:bg-slate-600 transition-colors">
-        {{ translationService.translate('next') }}
+        Next
       </button>
     </div>
   </div>
 } @else {
   <div class="text-center p-8 bg-white dark:bg-slate-800 rounded-xl shadow-lg">
-    <h2 class="text-2xl font-bold text-slate-800 dark:text-slate-200">{{ translationService.translate('noFlashcards') }}</h2>
-    <p class="mt-2 text-slate-500 dark:text-slate-400">{{ translationService.translate('noFlashcardsDesc') }}</p>
+    <h2 class="text-2xl font-bold text-slate-800 dark:text-slate-200">No Flashcards to Display</h2>
+    <p class="mt-2 text-slate-500 dark:text-slate-400">This topic does not have any vocabulary words.</p>
   </div>
 }
