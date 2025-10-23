@@ -1,6 +1,7 @@
 import { Component, ChangeDetectionStrategy, output, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataService } from '../../services/data.service';
+import { TranslationService } from '../../services/translation.service';
 import type { Topic, Difficulty } from '../../models/vocabulary.model';
 import { ReportingComponent } from '../reporting/reporting.component';
 
@@ -15,6 +16,7 @@ type DashboardView = 'topics' | 'reporting';
 })
 export class DashboardComponent {
   dataService = inject(DataService);
+  public translationService = inject(TranslationService);
   
   viewTopic = output<string>();
   startPractice = output<string>();
@@ -65,7 +67,7 @@ export class DashboardComponent {
 
   deleteTopic(topicId: string, event: MouseEvent) {
     event.stopPropagation();
-    if (confirm('Are you sure you want to delete this topic and all its words? This will also remove its practice history.')) {
+    if (confirm(this.translationService.translate('deleteTopicConfirm'))) {
       this.dataService.deleteTopic(topicId);
     }
   }

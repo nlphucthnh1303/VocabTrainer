@@ -1,8 +1,9 @@
 import { Component, ChangeDetectionStrategy, input, output, signal, computed, OnInit, inject, PLATFORM_ID } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import type { Topic, VocabularyItem, PracticeAttempt } from '../../models/vocabulary.model';
 import { DataService } from '../../services/data.service';
 import { GeminiService } from '../../services/gemini.service';
+import { TranslationService } from '../../services/translation.service';
 
 interface QuizQuestion {
   type: 'mcq' | 'fill-in-the-blank';
@@ -19,6 +20,7 @@ type QuizState = 'generating'| 'in_progress' | 'finished';
   selector: 'app-practice',
   standalone: true,
   templateUrl: './practice.component.html',
+  imports: [CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PracticeComponent implements OnInit {
@@ -28,6 +30,7 @@ export class PracticeComponent implements OnInit {
   private dataService = inject(DataService);
   private geminiService = inject(GeminiService);
   private platformId = inject(PLATFORM_ID);
+  public translationService = inject(TranslationService);
   
   quizState = signal<QuizState>('generating');
   questions = signal<QuizQuestion[]>([]);
