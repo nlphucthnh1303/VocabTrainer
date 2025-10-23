@@ -118,7 +118,7 @@
         </div>
         <div class="mt-6 flex justify-end gap-3">
           <button type="button" (click)="closeTopicModal()" class="px-4 py-2 bg-slate-200 dark:bg-slate-600 text-slate-800 dark:text-slate-200 font-semibold rounded-lg hover:bg-slate-300 dark:hover:bg-slate-500 transition-colors">{{ translationService.translate('cancel') }}</button>
-          <button type="submit" class="px-4 py-2 bg-primary-600 text-white font-semibold rounded-lg shadow-md hover:bg-primary-700 transition-colors">{{ translationService.translate('saveTopic') }}</button>
+          <button type="submit" [disabled]="!topicName()" class="px-4 py-2 bg-primary-600 text-white font-semibold rounded-lg shadow-md hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">{{ translationService.translate('saveTopic') }}</button>
         </div>
       </form>
     </div>
