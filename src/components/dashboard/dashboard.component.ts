@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, output, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataService } from '../../services/data.service';
-import type { Topic } from '../../models/vocabulary.model';
+import type { Topic, Difficulty } from '../../models/vocabulary.model';
 import { ReportingComponent } from '../reporting/reporting.component';
 
 type DashboardView = 'topics' | 'reporting';
@@ -27,6 +27,7 @@ export class DashboardComponent {
   editingTopic = signal<Topic | null>(null);
   topicName = signal('');
   topicDescription = signal('');
+  topicDifficulty = signal<Difficulty>('Beginner');
 
   // Settings Modal
   isSettingsModalOpen = signal(false);
@@ -38,9 +39,11 @@ export class DashboardComponent {
     if (topic) {
       this.topicName.set(topic.name);
       this.topicDescription.set(topic.description);
+      this.topicDifficulty.set(topic.difficulty);
     } else {
       this.topicName.set('');
       this.topicDescription.set('');
+      this.topicDifficulty.set('Beginner');
     }
     this.isTopicModalOpen.set(true);
   }
@@ -53,9 +56,9 @@ export class DashboardComponent {
   saveTopic() {
     if (!this.topicName()) return;
     if (this.editingTopic()) {
-      this.dataService.updateTopic(this.editingTopic()!.id, this.topicName(), this.topicDescription());
+      this.dataService.updateTopic(this.editingTopic()!.id, this.topicName(), this.topicDescription(), this.topicDifficulty());
     } else {
-      this.dataService.addTopic(this.topicName(), this.topicDescription());
+      this.dataService.addTopic(this.topicName(), this.topicDescription(), this.topicDifficulty());
     }
     this.closeTopicModal();
   }

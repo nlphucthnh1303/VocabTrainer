@@ -1,176 +1,143 @@
-import { Component, ChangeDetectionStrategy, inject, computed, signal, effect, ElementRef, viewChild } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataService } from '../../services/data.service';
-import type { VocabularyItem, Topic } from '../../models/vocabulary.model';
-
-// Use a global d3 instance from the script tag in index.html
-declare var d3: any;
-
-interface WordStats {
-  wordItem: VocabularyItem;
-  topicName: string;
-  frequency: number;
-  correct: number;
-  recallRate: number; // 0 to 1
-  mastery: number; // 0 to 100
-  lastAttempt: number;
-  reviewDate: number;
-}
-
-interface TopicStats {
-  topic: Topic;
-  avgMastery: number;
-  wordsStudied: number;
-  totalAttempts: number;
-}
+import type { Topic, VocabularyItem, PracticeAttempt } from '../../models/vocabulary.model';
 
 @Component({
   selector: 'app-reporting',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './reporting.component.html',
+  template: `
+    <div class="p-4 md:p-6 space-y-6">
+      <h2 class="text-2xl font-bold text-slate-800 dark:text-slate-200">Practice Report</h2>
+      
+      @if (totalAttempts() === 0) {
+        <div class="text-center py-12 bg-slate-50 dark:bg-slate-800 rounded-lg">
+          <svg class="mx-auto h-12 w-12 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V7a2 2 0 012-2h10a2 2 0 012 2v10a2 2 0 01-2 2z" />
+          </svg>
+          <h3 class="mt-2 text-sm font-semibold text-slate-900 dark:text-white">No practice data</h3>
+          <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Start a practice session to see your progress.</p>
+        </div>
+      } @else {
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Overall Accuracy -->
+          <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow">
+            <h3 class="text-lg font-medium text-slate-900 dark:text-slate-100">Overall Accuracy</h3>
+            <p class="mt-2 text-4xl font-bold text-primary-600 dark:text-primary-400">{{ overallAccuracy() | percent:'1.0-1' }}</p>
+            <p class="text-sm text-slate-500 dark:text-slate-400">{{ totalCorrect() }} correct out of {{ totalAttempts() }} attempts</p>
+          </div>
+
+          <!-- Topics -->
+          <div class="md:col-span-2 bg-white dark:bg-slate-800 p-6 rounded-lg shadow">
+            <h3 class="text-lg font-medium text-slate-900 dark:text-slate-100">Performance by Topic</h3>
+            <div class="mt-4 space-y-4">
+              @for (stat of statsByTopic(); track stat.name) {
+                @if (stat.hasData) {
+                  <div>
+                    <div class="flex justify-between text-sm font-medium text-slate-700 dark:text-slate-300">
+                      <span>{{ stat.name }}</span>
+                      <span>{{ stat.accuracy | percent:'1.0-0' }}</span>
+                    </div>
+                    <div class="mt-1 bg-slate-200 dark:bg-slate-700 rounded-full h-2.5">
+                      <div class="bg-primary-600 h-2.5 rounded-full" [style.width.%]="stat.accuracy * 100"></div>
+                    </div>
+                    <p class="text-xs text-right text-slate-500 dark:text-slate-400 mt-1">{{ stat.attempts }} attempts</p>
+                  </div>
+                }
+              }
+            </div>
+          </div>
+        </div>
+        
+        <!-- Difficult Words -->
+        @if (difficultWords().length > 0) {
+          <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow mt-6">
+              <h3 class="text-lg font-medium text-slate-900 dark:text-slate-100">Words to Review</h3>
+              <p class="text-sm text-slate-500 dark:text-slate-400">Top 5 words you've had the most trouble with.</p>
+              <ul class="mt-4 divide-y divide-slate-200 dark:divide-slate-700">
+                @for (word of difficultWords(); track word.word) {
+                  <li class="py-3 flex items-center justify-between">
+                    <div>
+                      <p class="font-semibold text-slate-800 dark:text-slate-200">{{ word.word }}</p>
+                      <p class="text-sm text-slate-500 dark:text-slate-400">{{ word.topicName }}</p>
+                    </div>
+                    <div class="text-right">
+                       <p class="font-semibold" [class.text-red-500]="word.accuracy < 0.5" [class.text-yellow-500]="word.accuracy >= 0.5">
+                          {{ word.accuracy | percent:'1.0-0' }}
+                       </p>
+                       <p class="text-xs text-slate-500 dark:text-slate-400">{{ word.correct }}/{{ word.total }} correct</p>
+                    </div>
+                  </li>
+                }
+              </ul>
+          </div>
+        }
+      }
+    </div>
+  `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReportingComponent {
   private dataService = inject(DataService);
-  private chartContainer = viewChild<ElementRef>('chartContainer');
 
-  allWordStats = computed<WordStats[]>(() => {
-    const topics = this.dataService.topics();
-    const history = this.dataService.practiceHistory();
-    const stats: WordStats[] = [];
+  private practiceHistory = this.dataService.practiceHistory;
+  private topics = this.dataService.topics;
 
-    for (const topic of topics) {
-      for (const word of topic.vocabularies) {
-        const attempts = history.filter(h => h.wordId === word.id);
-        if (attempts.length > 0) {
-          const correct = attempts.filter(a => a.correct).length;
-          const recallRate = correct / attempts.length;
-          
-          // Simple mastery: weighted average - more recent attempts are more important
-          const sortedAttempts = [...attempts].sort((a, b) => a.timestamp - b.timestamp);
-          let weightedScore = 0;
-          let totalWeight = 0;
-          sortedAttempts.forEach((attempt, index) => {
-            const weight = Math.pow(index + 1, 2); // e.g., 1, 4, 9, 16...
-            weightedScore += (attempt.correct ? 1 : 0) * weight;
-            totalWeight += weight;
-          });
-          const mastery = totalWeight > 0 ? (weightedScore / totalWeight) * 100 : 0;
-          
-          const lastAttempt = Math.max(...attempts.map(a => a.timestamp));
-          
-          // Simple Spaced Repetition: calculate next review date
-          let reviewDays = 1;
-          if (mastery > 90) reviewDays = 14;
-          else if (mastery > 75) reviewDays = 7;
-          else if (mastery > 50) reviewDays = 3;
-          const reviewDate = lastAttempt + reviewDays * 24 * 60 * 60 * 1000;
-
-          stats.push({
-            wordItem: word,
-            topicName: topic.name,
-            frequency: attempts.length,
-            correct: correct,
-            recallRate: recallRate,
-            mastery: mastery,
-            lastAttempt: lastAttempt,
-            reviewDate: reviewDate
-          });
-        }
-      }
-    }
-    return stats;
+  totalAttempts = computed(() => this.practiceHistory().length);
+  totalCorrect = computed(() => this.practiceHistory().filter(a => a.correct).length);
+  overallAccuracy = computed(() => {
+    const total = this.totalAttempts();
+    return total > 0 ? this.totalCorrect() / total : 0;
   });
 
-  allTopicStats = computed<TopicStats[]>(() => {
-    const topics = this.dataService.topics();
-    const wordStats = this.allWordStats();
+  statsByTopic = computed(() => {
+    const history = this.practiceHistory();
+    const topics = this.topics();
     
     return topics.map(topic => {
-      const topicWordStats = wordStats.filter(ws => ws.topicName === topic.name);
-      const totalMastery = topicWordStats.reduce((sum, ws) => sum + ws.mastery, 0);
-      const avgMastery = topicWordStats.length > 0 ? totalMastery / topicWordStats.length : 0;
-      const totalAttempts = topicWordStats.reduce((sum, ws) => sum + ws.frequency, 0);
-
-      return {
-        topic: topic,
-        avgMastery: avgMastery,
-        wordsStudied: topicWordStats.length,
-        totalAttempts: totalAttempts,
-      };
-    }).sort((a,b) => b.avgMastery - a.avgMastery);
-  });
-  
-  wordsToReview = computed(() => {
-    const now = Date.now();
-    return this.allWordStats()
-      .filter(ws => ws.reviewDate <= now || ws.mastery < 60)
-      .sort((a, b) => a.reviewDate - b.reviewDate)
-      .slice(0, 10);
-  });
-
-  overallStats = computed(() => {
-    const stats = this.allWordStats();
-    const totalAttempts = stats.reduce((sum, s) => sum + s.frequency, 0);
-    const totalCorrect = stats.reduce((sum, s) => sum + s.correct, 0);
-    const overallAccuracy = totalAttempts > 0 ? (totalCorrect / totalAttempts) * 100 : 0;
-    return {
-      wordsStudied: new Set(stats.map(s => s.wordItem.id)).size,
-      totalAttempts,
-      overallAccuracy,
-    };
-  });
-
-  constructor() {
-    // Redraw chart when data changes
-    effect(() => {
-      if (this.allTopicStats().length > 0 && this.chartContainer()) {
-        this.drawChart(this.allTopicStats());
+      const topicAttempts = history.filter(h => h.topicId === topic.id);
+      const total = topicAttempts.length;
+      if (total === 0) {
+        return { name: topic.name, accuracy: 0, attempts: 0, hasData: false };
       }
+      const correct = topicAttempts.filter(a => a.correct).length;
+      const accuracy = correct / total;
+      return { name: topic.name, accuracy, attempts: total, hasData: true };
     });
-  }
+  });
 
-  private drawChart(data: TopicStats[]): void {
-    const container = this.chartContainer()!.nativeElement;
-    d3.select(container).select('svg').remove();
+  difficultWords = computed(() => {
+    const history = this.practiceHistory();
+    const topics = this.topics();
+    const allVocab = topics.flatMap(t => t.vocabularies.map(v => ({...v, topicName: t.name})));
+    
+    const wordStats = new Map<string, { correct: number, total: number }>();
 
-    const margin = { top: 20, right: 20, bottom: 80, left: 40 };
-    const width = container.clientWidth - margin.left - margin.right;
-    const height = 300 - margin.top - margin.bottom;
+    for (const attempt of history) {
+      const stat = wordStats.get(attempt.wordId) ?? { correct: 0, total: 0 };
+      stat.total++;
+      if (attempt.correct) {
+        stat.correct++;
+      }
+      wordStats.set(attempt.wordId, stat);
+    }
+    
+    const statsArray = Array.from(wordStats.entries()).map(([wordId, stats]) => {
+      const vocabItem = allVocab.find(v => v.id === wordId);
+      if (!vocabItem) return null;
+      
+      return {
+        word: vocabItem.word,
+        topicName: vocabItem.topicName,
+        correct: stats.correct,
+        total: stats.total,
+        accuracy: stats.total > 0 ? stats.correct / stats.total : 0,
+      };
+    }).filter((s): s is { word: string; topicName: string; correct: number; total: number; accuracy: number; } => 
+      s !== null && s.total > 0 && s.accuracy < 1
+    );
 
-    const svg = d3.select(container).append('svg')
-      .attr('width', width + margin.left + margin.right)
-      .attr('height', height + margin.top + margin.bottom)
-      .append('g')
-      .attr('transform', `translate(${margin.left},${margin.top})`);
-
-    const x = d3.scaleBand()
-      .range([0, width])
-      .domain(data.map(d => d.topic.name))
-      .padding(0.2);
-
-    svg.append('g')
-      .attr('transform', `translate(0,${height})`)
-      .call(d3.axisBottom(x))
-      .selectAll('text')
-      .attr('transform', 'translate(-10,0)rotate(-45)')
-      .style('text-anchor', 'end');
-
-    const y = d3.scaleLinear()
-      .domain([0, 100])
-      .range([height, 0]);
-
-    svg.append('g').call(d3.axisLeft(y));
-
-    svg.selectAll('mybar')
-      .data(data)
-      .enter()
-      .append('rect')
-      .attr('x', d => x(d.topic.name))
-      .attr('y', d => y(d.avgMastery))
-      .attr('width', x.bandwidth())
-      .attr('height', d => height - y(d.avgMastery))
-      .attr('fill', '#4f46e5');
-  }
+    return statsArray.sort((a, b) => a.accuracy - b.accuracy).slice(0, 5);
+  });
 }

@@ -6,12 +6,15 @@ export interface VocabularyItem {
   meaning: string;
 }
 
+export type Difficulty = 'Beginner' | 'Intermediate' | 'Advanced';
+
 export interface Topic {
   id: string;
   name: string;
   description: string;
   vocabularies: VocabularyItem[];
   practiceRatio: number; // 0.0 to 1.0, representing percentage of Multiple Choice Questions
+  difficulty: Difficulty;
 }
 
 export interface PracticeAttempt {

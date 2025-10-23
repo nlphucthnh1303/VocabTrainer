@@ -173,7 +173,7 @@ export class PracticeComponent implements OnInit {
     }
     const isCorrect = option.toLowerCase() === this.currentQuestion().correctAnswer.toLowerCase();
     
-    if (isCorrect) return 'bg-green-500 text-white border-green-500';
+    if (isCorrect) return 'bg-primary-500 text-white border-primary-500';
     if (option === this.selectedAnswer()) return 'bg-red-500 text-white border-red-500';
 
     return 'bg-white dark:bg-slate-700 opacity-60';
@@ -181,11 +181,11 @@ export class PracticeComponent implements OnInit {
 
   getInputClass(): string {
     if (this.selectedAnswer() === null) {
-      return 'border-slate-300 dark:border-slate-600 focus:border-indigo-500 focus:ring-indigo-500';
+      return 'border-slate-300 dark:border-slate-600 focus:border-primary-500 focus:ring-primary-500';
     }
     const isCorrect = this.selectedAnswer()?.toLowerCase() === this.currentQuestion().correctAnswer.toLowerCase();
     if (isCorrect) {
-      return 'bg-green-100 dark:bg-green-900 border-green-500 text-green-800 dark:text-green-200';
+      return 'bg-primary-100 dark:bg-primary-900 border-primary-500 text-primary-800 dark:text-primary-200';
     }
     return 'bg-red-100 dark:bg-red-900 border-red-500 text-red-800 dark:text-red-200';
   }

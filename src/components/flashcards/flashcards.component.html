@@ -1,47 +1,62 @@
-<div class="flex flex-col items-center gap-6">
-  <h2 class="text-3xl font-bold tracking-tight">{{ topic().name }} - Flashcards</h2>
-
-  <div class="w-full max-w-xl h-72 perspective-1000">
-    @if(currentCard(); as card) {
-      <div class="relative w-full h-full flashcard" [class.flipped]="isFlipped()" (click)="flipCard()">
-        <div class="flashcard-inner absolute w-full h-full">
-          <!-- Front of Card -->
-          <div class="flashcard-front absolute w-full h-full bg-white dark:bg-slate-700 rounded-xl shadow-lg flex items-center justify-center p-6 border-4 border-indigo-300 dark:border-indigo-600">
-            <h3 class="text-5xl font-bold text-slate-800 dark:text-slate-100">{{ card.word }}</h3>
-            <button (click)="$event.stopPropagation(); speak()" class="absolute top-4 right-4 p-2 text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-full hover:bg-slate-100 dark:hover:bg-slate-600">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M10 2a6 6 0 00-6 6v3.586l-1.707 1.707A1 1 0 003 15v1a1 1 0 001 1h12a1 1 0 001-1v-1a1 1 0 00-.293-.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
-              </svg>
-            </button>
-          </div>
-          <!-- Back of Card -->
-          <div class="flashcard-back absolute w-full h-full bg-indigo-500 dark:bg-indigo-800 rounded-xl shadow-lg flex flex-col items-center justify-center p-6 text-white">
-            <p class="text-3xl font-semibold">{{ card.meaning }}</p>
-            <p class="mt-2 text-xl text-indigo-200">{{ card.phonetic }}</p>
-            <p class="mt-4 text-lg italic text-indigo-300">{{ card.partOfSpeech }}</p>
-          </div>
+@if (currentCard(); as card) {
+  <div class="flex flex-col items-center gap-6">
+    <!-- Progress Indicator -->
+    <div class="w-full max-w-xl">
+      <p class="text-center font-semibold text-slate-600 dark:text-slate-400">
+        Card {{ currentIndex() + 1 }} of {{ topic().vocabularies.length }}
+      </p>
+      <div class="mt-2 w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
+        <div class="bg-primary-600 h-2 rounded-full transition-all duration-300" 
+             [style.width.%]="(currentIndex() + 1) / topic().vocabularies.length * 100">
         </div>
       </div>
-    }
-  </div>
+    </div>
+    
+    <!-- Flashcard -->
+    <div class="w-full max-w-xl h-80 perspective-1000">
+      <div 
+        (click)="flipCard()" 
+        class="relative w-full h-full preserve-3d transition-transform duration-700 ease-in-out cursor-pointer rounded-2xl shadow-lg ring-4 ring-primary-500/20 dark:ring-primary-400/20"
+        [class.rotate-y-180]="isFlipped()">
+        
+        <!-- Front of the card -->
+        <div class="absolute w-full h-full backface-hidden rounded-2xl bg-gradient-to-br from-slate-50 to-white dark:from-slate-700 dark:to-slate-800 flex flex-col items-center justify-center p-6 text-center">
+          <h2 class="text-5xl font-bold text-slate-900 dark:text-white">{{ card.word }}</h2>
+          @if (card.phonetic) {
+            <p class="mt-4 text-2xl text-slate-500 dark:text-slate-400">{{ card.phonetic }}</p>
+          }
+        </div>
 
-  <div class="text-center text-lg font-medium text-slate-600 dark:text-slate-400">
-    Card {{ currentIndex() + 1 }} of {{ topic().vocabularies.length }}
-  </div>
+        <!-- Back of the card -->
+        <div class="absolute w-full h-full backface-hidden rotate-y-180 rounded-2xl animated-gradient-bg text-white flex flex-col items-center justify-center p-6 text-center">
+          <p class="text-3xl font-semibold">{{ card.meaning }}</p>
+          @if (card.partOfSpeech) {
+             <p class="mt-4 text-lg italic opacity-80">({{ card.partOfSpeech }})</p>
+          }
+        </div>
+      </div>
+    </div>
 
-  <div class="flex items-center justify-center gap-4 w-full max-w-xl">
-    <button (click)="prevCard()" class="p-4 rounded-full bg-white dark:bg-slate-700 shadow-md hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-      </svg>
-    </button>
-    <button (click)="flipCard()" class="px-8 py-4 w-48 text-lg font-bold text-white bg-indigo-600 rounded-lg shadow-lg hover:bg-indigo-700 transition-transform transform hover:scale-105">
-      Flip
-    </button>
-    <button (click)="nextCard()" class="p-4 rounded-full bg-white dark:bg-slate-700 shadow-md hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-      </svg>
-    </button>
+    <!-- Controls -->
+    <div class="flex items-center justify-center gap-4 w-full max-w-xl">
+      <button (click)="$event.stopPropagation(); prevCard()" class="px-8 py-3 font-bold text-white bg-slate-500 rounded-lg shadow-md hover:bg-slate-600 transition-colors">
+        Previous
+      </button>
+      
+      <button (click)="$event.stopPropagation(); speak()" title="Pronounce word" class="p-4 bg-white dark:bg-slate-700 rounded-full shadow-lg hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors">
+         <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary-600 dark:text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+         </svg>
+      </button>
+
+      <button (click)="$event.stopPropagation(); nextCard()" class="px-8 py-3 font-bold text-white bg-slate-500 rounded-lg shadow-md hover:bg-slate-600 transition-colors">
+        Next
+      </button>
+    </div>
   </div>
-</div>
+} @else {
+  <div class="text-center p-8 bg-white dark:bg-slate-800 rounded-xl shadow-lg">
+    <h2 class="text-2xl font-bold text-slate-800 dark:text-slate-200">No Flashcards to Display</h2>
+    <p class="mt-2 text-slate-500 dark:text-slate-400">This topic does not have any vocabulary words.</p>
+  </div>
+}

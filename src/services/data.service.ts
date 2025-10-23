@@ -1,5 +1,5 @@
 import { signal, effect, Injectable } from '@angular/core';
-import type { Topic, VocabularyItem, PracticeAttempt } from '../models/vocabulary.model';
+import type { Topic, VocabularyItem, PracticeAttempt, Difficulty } from '../models/vocabulary.model';
 
 @Injectable({
   providedIn: 'root',
@@ -47,20 +47,21 @@ export class DataService {
 
   // --- Topic Management ---
 
-  addTopic(name: string, description: string) {
+  addTopic(name: string, description: string, difficulty: Difficulty) {
     const newTopic: Topic = {
       id: crypto.randomUUID(),
       name,
       description,
+      difficulty,
       vocabularies: [],
       practiceRatio: 0.5, // Default to 50% MCQ
     };
     this.topics.update(topics => [...topics, newTopic]);
   }
 
-  updateTopic(topicId: string, name: string, description: string) {
+  updateTopic(topicId: string, name: string, description: string, difficulty: Difficulty) {
     this.topics.update(topics => 
-      topics.map(t => t.id === topicId ? { ...t, name, description } : t)
+      topics.map(t => t.id === topicId ? { ...t, name, description, difficulty } : t)
     );
   }
 
@@ -128,6 +129,7 @@ export class DataService {
         name: 'Common English Verbs',
         description: 'A collection of frequently used verbs in English.',
         practiceRatio: 0.5,
+        difficulty: 'Beginner',
         vocabularies: [
           { id: 'v1', word: 'run', phonetic: '/rʌn/', partOfSpeech: 'verb', meaning: 'move at a speed faster than a walk' },
           { id: 'v2', word: 'eat', phonetic: '/iːt/', partOfSpeech: 'verb', meaning: 'put (food) into the mouth and chew and swallow it' },
@@ -141,6 +143,7 @@ export class DataService {
         name: 'Technology Terms',
         description: 'Vocabulary related to computers and the internet.',
         practiceRatio: 0.7,
+        difficulty: 'Intermediate',
         vocabularies: [
           { id: 'v6', word: 'algorithm', phonetic: '/ˈælɡərɪðəm/', partOfSpeech: 'noun', meaning: 'a process or set of rules to be followed in calculations' },
           { id: 'v7', word: 'database', phonetic: '/ˈdeɪtəbeɪs/', partOfSpeech: 'noun', meaning: 'a structured set of data held in a computer' },
