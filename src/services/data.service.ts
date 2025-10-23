@@ -1,6 +1,7 @@
 import { signal, effect, Injectable, inject } from '@angular/core';
 import type { Topic, VocabularyItem, PracticeAttempt, Difficulty } from '../models/vocabulary.model';
 import { TopicService } from './topic.service';
+import { AlertService } from './alert.service';
 @Injectable({
   providedIn: 'root',
 })
@@ -8,7 +9,7 @@ export class DataService {
   topics = signal<Topic[]>([]);
   practiceHistory = signal<PracticeAttempt[]>([]);
   private topicService = inject(TopicService);
-  constructor() {
+  constructor(private alertService: AlertService) {
      this.topicService.getItems().subscribe((data: Topic[]) => {
       this.topics.set(data);
       console.log('data topics from Firestore:', data);
@@ -30,19 +31,33 @@ export class DataService {
   addTopic(name: string, description: string, difficulty: Difficulty) {
     const newTopic: Topic = {
       id: crypto.randomUUID(),
-      name,
-      description,
-      difficulty,
+      name: name,
+      description: description,
+      difficulty: difficulty,
       vocabularies: [],
       practiceRatio: 0.5, // Default to 50% MCQ
     };
-    this.topics.update(topics => [...topics, newTopic]);
+    this.topicService.createItem(newTopic).then(() => {
+      this.alertService.show('success', 'Dữ liệu đã được lưu thành công!');
+    }).catch((error) => {
+      console.error('Error creating topic in Firestore:', error);
+    });
   }
 
   updateTopic(topicId: string, name: string, description: string, difficulty: Difficulty) {
-    this.topics.update(topics => 
-      topics.map(t => t.id === topicId ? { ...t, name, description, difficulty } : t)
-    );
+    const updateTopic: Topic = {
+      id: topicId,
+      name: name,
+      description: description,
+      difficulty: difficulty,
+      vocabularies: [],
+      practiceRatio: 0.5, // Default to 50% MCQ
+    };
+    this.topicService.updateItem(topicId,updateTopic).then(() => {
+      this.alertService.show('success', 'Dữ liệu đã được lưu thành công!');
+    }).catch((error) => {
+      console.error('Error creating topic in Firestore:', error);
+    });
   }
 
   updateTopicSettings(topicId: string, settings: { practiceRatio: number }) {
@@ -52,7 +67,12 @@ export class DataService {
   }
 
   deleteTopic(topicId: string) {
-    this.topics.update(topics => topics.filter(t => t.id !== topicId));
+    this.topicService.deleteItem(topicId).then(() => {
+      this.alertService.show('success', 'Xóa dữ liệu đã được lưu thành công!');
+    }).catch((error) => {
+      console.error('Error creating topic in Firestore:', error);
+    });
+    // this.topics.update(topics => topics.filter(t => t.id !== topicId));
     // Also clear history for the deleted topic
     this.practiceHistory.update(history => history.filter(h => h.topicId !== topicId));
   }
