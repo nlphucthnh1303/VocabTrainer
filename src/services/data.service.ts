@@ -1,38 +1,18 @@
-import { signal, effect, Injectable } from '@angular/core';
+import { signal, effect, Injectable, inject } from '@angular/core';
 import type { Topic, VocabularyItem, PracticeAttempt, Difficulty } from '../models/vocabulary.model';
-
+import { TopicService } from './topic.service';
 @Injectable({
   providedIn: 'root',
 })
 export class DataService {
   topics = signal<Topic[]>([]);
   practiceHistory = signal<PracticeAttempt[]>([]);
-
+  private topicService = inject(TopicService);
   constructor() {
-    if (typeof window !== 'undefined' && window.localStorage) {
-      try {
-        const storedTopics = localStorage.getItem('vocab-topics');
-        if (storedTopics) {
-          this.topics.set(JSON.parse(storedTopics));
-        } else {
-          this.topics.set(this.getSampleData());
-        }
-
-        const storedHistory = localStorage.getItem('vocab-history');
-        if (storedHistory) {
-          this.practiceHistory.set(JSON.parse(storedHistory));
-        }
-
-      } catch (e) {
-        console.error('Failed to access or parse from localStorage, using sample data.', e);
-        this.topics.set(this.getSampleData());
-        this.practiceHistory.set([]);
-      }
-    } else {
-      // Fallback for non-browser environments
-      this.topics.set(this.getSampleData());
-    }
-
+     this.topicService.getItems().subscribe((data: Topic[]) => {
+      this.topics.set(data);
+      console.log('data topics from Firestore:', data);
+    });
     effect(() => {
         if (typeof window !== 'undefined' && window.localStorage) {
           try {

@@ -101,28 +101,30 @@
       <h3 class="text-xl font-bold mb-4">{{ editingTopic() ? translationService.translate('editTopicTitle') : translationService.translate('createTopicTitle') }}</h3>
       <form (ngSubmit)="saveTopic()" class="space-y-4">
         <div>
-          <label for="topic-name" class="block text-sm font-medium text-slate-700 dark:text-slate-300">{{ translationService.translate('topicName') }}</label>
-          <input id="topic-name" type="text" [value]="topicName()" (input)="topicName.set($event.target.value)" required class="mt-1 block w-full rounded-md border-slate-300 dark:border-slate-600 dark:bg-slate-700 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
+          <label for="topic-name" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">{{ translationService.translate('topicName') }}</label>
+          <input id="topic-name" type="text" [value]="topicName()" (input)="topicName.set($event.target.value)" required class="block w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-4 py-2 text-slate-900 dark:text-white shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 sm:text-sm transition duration-150 ease-in-out ">
         </div>
         <div>
-          <label for="topic-desc" class="block text-sm font-medium text-slate-700 dark:text-slate-300">{{ translationService.translate('description') }}</label>
-          <textarea id="topic-desc" [value]="topicDescription()" (input)="topicDescription.set($event.target.value)" rows="3" class="mt-1 block w-full rounded-md border-slate-300 dark:border-slate-600 dark:bg-slate-700 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"></textarea>
-        </div>
-        <div>
-          <label for="topic-difficulty" class="block text-sm font-medium text-slate-700 dark:text-slate-300">{{ translationService.translate('difficulty') }}</label>
-          <select id="topic-difficulty" [value]="topicDifficulty()" (change)="topicDifficulty.set($event.target.value)" class="mt-1 block w-full rounded-md border-slate-300 dark:border-slate-600 dark:bg-slate-700 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
+          <label for="topic-difficulty" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">{{ translationService.translate('difficulty') }}</label>
+          <select id="topic-difficulty" [value]="topicDifficulty()" (change)="topicDifficulty.set($event.target.value)" class="block w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-4 py-2 text-slate-900 dark:text-white shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 sm:text-sm transition duration-150 ease-in-out">
             <option value="Beginner">Beginner</option>
             <option value="Intermediate">Intermediate</option>
             <option value="Advanced">Advanced</option>
           </select>
         </div>
+
+        <div>
+          <label for="topic-desc" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">{{ translationService.translate('description') }}</label>
+          <textarea id="topic-desc" [value]="topicDescription()" (input)="topicDescription.set($event.target.value)" rows="3" class="block w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-4 py-2 text-slate-900 dark:text-white shadow-sm focus:border-blue-500 dark:focus:border-blue-400 focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 sm:text-sm transition duration-150 ease-in-out"></textarea>
+        </div>
+        
         <div class="mt-6 flex justify-end gap-3">
           <button type="button" (click)="closeTopicModal()" class="px-4 py-2 bg-slate-200 dark:bg-slate-600 text-slate-800 dark:text-slate-200 font-semibold rounded-lg hover:bg-slate-300 dark:hover:bg-slate-500 transition-colors">{{ translationService.translate('cancel') }}</button>
           <button type="submit" [disabled]="!topicName()" class="px-4 py-2 bg-primary-600 text-white font-semibold rounded-lg shadow-md hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">{{ translationService.translate('saveTopic') }}</button>
         </div>
       </form>
     </div>
-  </div>
+  </div>  
 }
 
 <!-- Settings Modal -->
