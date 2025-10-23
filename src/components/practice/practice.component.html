@@ -1,0 +1,102 @@
+<div class="max-w-2xl mx-auto">
+  @switch (quizState()) {
+    @case ('generating') {
+      <div class="text-center p-8 bg-white dark:bg-slate-800 rounded-xl shadow-lg">
+        <div class="flex justify-center items-center mb-4">
+          <svg class="animate-spin -ml-1 mr-3 h-8 w-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+        </div>
+        <h2 class="text-2xl font-bold text-slate-800 dark:text-slate-200">Generating Quiz...</h2>
+        <p class="text-slate-500 dark:text-slate-400 mt-2">Please wait while we prepare your questions.</p>
+      </div>
+    }
+    @case ('in_progress') {
+      @if (currentQuestion(); as question) {
+        <div class="bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-xl shadow-lg space-y-6">
+          <!-- Progress Bar -->
+          <div>
+            <div class="flex justify-between mb-1">
+              <span class="text-base font-medium text-indigo-700 dark:text-indigo-400">Progress</span>
+              <span class="text-sm font-medium text-indigo-700 dark:text-indigo-400">{{ currentQuestionIndex() + 1 }} / {{ questions().length }}</span>
+            </div>
+            <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2.5">
+              <div class="bg-indigo-600 h-2.5 rounded-full transition-all duration-300" [style.width.%]="progress()"></div>
+            </div>
+          </div>
+
+          <!-- Question Text -->
+          <div class="text-center">
+            <h2 class="text-2xl font-semibold my-2 text-slate-900 dark:text-white">{{ question.questionText }}</h2>
+          </div>
+
+          @switch (question.type) {
+            @case ('mcq') {
+              <!-- MCQ Options -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                @for (option of question.options; track $index) {
+                  <button 
+                    (click)="selectAnswer(option)"
+                    [class]="getButtonClass(option)"
+                    [disabled]="selectedAnswer() !== null"
+                    class="p-4 rounded-lg border-2 text-left font-semibold text-lg transition-all duration-300 w-full disabled:cursor-not-allowed">
+                    {{ option }}
+                  </button>
+                }
+              </div>
+            }
+            @case ('fill-in-the-blank') {
+              <!-- Fill-in-the-blank Input -->
+              <form (submit)="$event.preventDefault(); submitFillInBlank()">
+                <div class="space-y-4">
+                  <input 
+                    type="text" 
+                    [value]="fillInBlankAnswer()"
+                    (input)="fillInBlankAnswer.set($any($event.target).value)"
+                    [class]="getInputClass()"
+                    [readOnly]="selectedAnswer() !== null"
+                    placeholder="Type the word here..."
+                    class="mt-1 block w-full px-4 py-3 text-lg bg-white dark:bg-slate-700 border rounded-md shadow-sm placeholder-slate-400 focus:outline-none transition-colors duration-300"
+                    autocomplete="off"
+                    autocorrect="off"
+                    spellcheck="false"
+                  >
+                  <button 
+                    type="submit"
+                    [disabled]="selectedAnswer() !== null || !fillInBlankAnswer()"
+                    class="w-full px-10 py-3 text-lg font-bold text-white bg-indigo-600 rounded-lg shadow-lg hover:bg-indigo-700 transition-colors disabled:bg-slate-400 dark:disabled:bg-slate-600 disabled:cursor-not-allowed">
+                    Check
+                  </button>
+                  @if (selectedAnswer() !== null && selectedAnswer()?.toLowerCase() !== question.correctAnswer.toLowerCase()) {
+                    <div class="text-center text-green-600 dark:text-green-400 font-semibold">
+                      Correct answer: <span class="font-bold">{{ question.correctAnswer }}</span>
+                    </div>
+                  }
+                </div>
+              </form>
+            }
+          }
+        </div>
+      }
+    }
+    @case ('finished') {
+       <!-- Results View -->
+      <div class="bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-xl shadow-lg text-center space-y-6">
+        <h2 class="text-4xl font-bold text-slate-900 dark:text-white">Quiz Complete!</h2>
+        <p class="text-xl text-slate-600 dark:text-slate-300">You scored</p>
+        <div class="text-6xl font-extrabold text-indigo-600 dark:text-indigo-400">
+          {{ score() }} / {{ questions().length }}
+        </div>
+        <div class="flex justify-center gap-4 pt-4">
+          <button (click)="generateQuestions()" class="px-6 py-3 font-semibold text-white bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 transition-colors">
+            Try Again
+          </button>
+          <button (click)="backToTopics.emit()" class="px-6 py-3 font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-700 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+            Back to Topics
+          </button>
+        </div>
+      </div>
+    }
+  }
+</div>

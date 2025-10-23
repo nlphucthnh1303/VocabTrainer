@@ -1,0 +1,137 @@
+<div class="space-y-6">
+  <!-- Tabs -->
+  <div class="border-b border-slate-200 dark:border-slate-700">
+    <nav class="-mb-px flex space-x-6" aria-label="Tabs">
+      <button 
+        (click)="currentView.set('topics')"
+        [class]="currentView() === 'topics' 
+          ? 'border-indigo-500 text-indigo-600 dark:border-indigo-400 dark:text-indigo-400' 
+          : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300 dark:text-slate-400 dark:hover:text-slate-300 dark:hover:border-slate-500'"
+        class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-lg transition-colors">
+        My Topics
+      </button>
+      <button 
+        (click)="currentView.set('reporting')"
+        [class]="currentView() === 'reporting' 
+          ? 'border-indigo-500 text-indigo-600 dark:border-indigo-400 dark:text-indigo-400' 
+          : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300 dark:text-slate-400 dark:hover:text-slate-300 dark:hover:border-slate-500'"
+        class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-lg transition-colors">
+        Progress Report
+      </button>
+    </nav>
+  </div>
+
+  @if (currentView() === 'topics') {
+    <div class="space-y-6">
+      <div class="flex justify-between items-center">
+        <h2 class="text-3xl font-bold tracking-tight">My Topics</h2>
+        <button (click)="openTopicModal()" class="flex items-center gap-2 bg-indigo-600 text-white font-semibold px-4 py-2 rounded-lg shadow-md hover:bg-indigo-700 transition-all duration-200 transform hover:scale-105">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+          </svg>
+          New Topic
+        </button>
+      </div>
+
+      @if (!dataService.topics().length) {
+        <div class="text-center py-16 px-6 bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700">
+          <h3 class="text-xl font-semibold text-slate-700 dark:text-slate-300">No topics yet!</h3>
+          <p class="mt-2 text-slate-500 dark:text-slate-400">Click "New Topic" to create your first vocabulary list.</p>
+        </div>
+      } @else {
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          @for (topic of dataService.topics(); track topic.id) {
+            <div (click)="viewTopic.emit(topic.id)" class="bg-white dark:bg-slate-800 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 transform hover:-translate-y-1 cursor-pointer flex flex-col justify-between">
+              <div class="p-6">
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white truncate">{{ topic.name }}</h3>
+                <p class="text-slate-500 dark:text-slate-400 mt-2 h-12 overflow-hidden">{{ topic.description }}</p>
+                <p class="text-sm text-indigo-500 dark:text-indigo-400 font-semibold mt-4">{{ topic.vocabularies.length }} words</p>
+              </div>
+              <div class="p-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700 rounded-b-xl flex justify-between items-center">
+                <div class="flex gap-2">
+                  <button (click)="$event.stopPropagation(); startPractice.emit(topic.id)" [disabled]="topic.vocabularies.length < 4" class="px-3 py-1 text-sm font-semibold text-white bg-green-500 rounded-md hover:bg-green-600 transition-colors disabled:bg-slate-400 disabled:cursor-not-allowed">Practice</button>
+                  <button (click)="$event.stopPropagation(); startFlashcards.emit(topic.id)" [disabled]="!topic.vocabularies.length" class="px-3 py-1 text-sm font-semibold text-white bg-blue-500 rounded-md hover:bg-blue-600 transition-colors disabled:bg-slate-400 disabled:cursor-not-allowed">Flashcards</button>
+                </div>
+                 <div class="flex gap-1">
+                    <button (click)="openTopicModal(topic); $event.stopPropagation()" title="Edit Topic" class="p-2 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z" /></svg>
+                    </button>
+                    <button (click)="openSettingsModal(topic, $event)" title="Settings" class="p-2 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0l-.1.41a2 2 0 01-1.42 1.42l-.41.1c-1.56.38-1.56 2.6 0 2.98l.41.1a2 2 0 011.42 1.42l.1.41c.38 1.56 2.6 1.56 2.98 0l.1-.41a2 2 0 011.42-1.42l.41-.1c1.56-.38 1.56-2.6 0-2.98l-.41-.1a2 2 0 01-1.42-1.42l-.1-.41zM10 5a5 5 0 100 10 5 5 0 000-10zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
+                      </svg>
+                    </button>
+                    <button (click)="deleteTopic(topic.id, $event)" title="Delete Topic" class="p-2 text-slate-500 hover:text-red-600 dark:hover:text-red-500 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                    </button>
+                  </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  } @else {
+    <app-reporting></app-reporting>
+  }
+</div>
+
+<!-- Add/Edit Topic Modal -->
+@if (isTopicModalOpen()) {
+  <div class="fixed inset-0 bg-black/60 flex items-center justify-center z-50" (click)="closeTopicModal()">
+    <div class="bg-white dark:bg-slate-800 rounded-lg shadow-2xl p-6 w-full max-w-md" (click)="$event.stopPropagation()">
+      <h3 class="text-xl font-bold mb-4">{{ editingTopic() ? 'Edit Topic' : 'Create New Topic' }}</h3>
+      <form (submit)="saveTopic()">
+        <div class="space-y-4">
+          <div>
+            <label for="topicName" class="block text-sm font-medium text-slate-700 dark:text-slate-300">Topic Name</label>
+            <input id="topicName" type="text" [value]="topicName()" (input)="topicName.set($any($event.target).value)" class="mt-1 block w-full px-3 py-2 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm placeholder-slate-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required>
+          </div>
+          <div>
+            <label for="topicDescription" class="block text-sm font-medium text-slate-700 dark:text-slate-300">Description</label>
+            <textarea id="topicDescription" [value]="topicDescription()" (input)="topicDescription.set($any($event.target).value)" rows="3" class="mt-1 block w-full px-3 py-2 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm placeholder-slate-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+          </div>
+        </div>
+        <div class="mt-6 flex justify-end gap-3">
+          <button type="button" (click)="closeTopicModal()" class="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-700 rounded-md hover:bg-slate-200 dark:hover:bg-slate-600">Cancel</button>
+          <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700">Save Topic</button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- Settings Modal -->
+@if (isSettingsModalOpen() && settingsTopic(); as topic) {
+  <div class="fixed inset-0 bg-black/60 flex items-center justify-center z-50" (click)="closeSettingsModal()">
+    <div class="bg-white dark:bg-slate-800 rounded-lg shadow-2xl p-6 w-full max-w-md" (click)="$event.stopPropagation()">
+      <h3 class="text-xl font-bold mb-2">Practice Settings</h3>
+      <h4 class="text-md text-slate-600 dark:text-slate-300 mb-4">{{ topic.name }}</h4>
+      <form (submit)="saveTopicSettings()">
+        <div class="space-y-4">
+          <div>
+            <label for="practiceRatio" class="block text-sm font-medium text-slate-700 dark:text-slate-300">Question Type Ratio</label>
+            <div class="flex items-center gap-4 mt-2">
+              <span class="text-xs text-slate-500">Fill-in</span>
+              <input 
+                id="practiceRatio" 
+                type="range" 
+                min="0" max="1" step="0.1" 
+                [value]="practiceRatio()" 
+                (input)="practiceRatio.set(+$any($event.target).value)"
+                class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-slate-700">
+              <span class="text-xs text-slate-500">MCQ</span>
+            </div>
+            <div class="text-center mt-2 font-semibold text-indigo-600 dark:text-indigo-400">
+              {{ (1 - practiceRatio()) * 100 | number:'1.0-0' }}% Fill-in-the-Blank / {{ practiceRatio() * 100 | number:'1.0-0' }}% Multiple Choice
+            </div>
+          </div>
+        </div>
+        <div class="mt-6 flex justify-end gap-3">
+          <button type="button" (click)="closeSettingsModal()" class="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-700 rounded-md hover:bg-slate-200 dark:hover:bg-slate-600">Cancel</button>
+          <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700">Save Settings</button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

@@ -1,0 +1,83 @@
+<div class="space-y-8">
+  <!-- Overall Stats -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md">
+      <h3 class="text-sm font-medium text-slate-500 dark:text-slate-400">Words Studied</h3>
+      <p class="mt-1 text-3xl font-semibold text-slate-900 dark:text-white">{{ overallStats().wordsStudied }}</p>
+    </div>
+    <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md">
+      <h3 class="text-sm font-medium text-slate-500 dark:text-slate-400">Total Attempts</h3>
+      <p class="mt-1 text-3xl font-semibold text-slate-900 dark:text-white">{{ overallStats().totalAttempts }}</p>
+    </div>
+    <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md">
+      <h3 class="text-sm font-medium text-slate-500 dark:text-slate-400">Overall Accuracy</h3>
+      <p class="mt-1 text-3xl font-semibold text-slate-900 dark:text-white">{{ overallStats().overallAccuracy | number:'1.0-1' }}%</p>
+    </div>
+  </div>
+
+  <!-- Topic Mastery Chart -->
+  <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md">
+    <h3 class="text-xl font-bold mb-4">Topic Mastery</h3>
+    @if (allTopicStats().length > 0) {
+      <div #chartContainer class="w-full h-[300px]"></div>
+    } @else {
+      <p class="text-center py-8 text-slate-500 dark:text-slate-400">Practice a topic to see your mastery chart here!</p>
+    }
+  </div>
+
+  <!-- Words to Review & Word Stats -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div class="lg:col-span-1 bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md h-fit">
+      <h3 class="text-xl font-bold mb-4">Words to Review</h3>
+      @if (wordsToReview().length > 0) {
+        <ul class="space-y-3">
+          @for(stat of wordsToReview(); track stat.wordItem.id) {
+            <li class="p-3 bg-slate-50 dark:bg-slate-700/50 rounded-md">
+              <p class="font-bold text-slate-800 dark:text-slate-100">{{ stat.wordItem.word }}</p>
+              <p class="text-sm text-slate-500 dark:text-slate-400">{{ stat.topicName }}</p>
+              <div class="w-full bg-slate-200 dark:bg-slate-600 rounded-full h-1.5 mt-2">
+                <div class="bg-yellow-500 h-1.5 rounded-full" [style.width.%]="stat.mastery"></div>
+              </div>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="text-center py-8 text-slate-500 dark:text-slate-400">No words to review right now. Keep up the great work!</p>
+      }
+    </div>
+
+    <div class="lg:col-span-2 bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden">
+        <h3 class="text-xl font-bold p-6">All Word Statistics</h3>
+        @if (allWordStats().length > 0) {
+          <div class="overflow-x-auto">
+            <table class="w-full text-left">
+              <thead class="bg-slate-50 dark:bg-slate-700/50">
+                <tr>
+                  <th class="p-4 text-sm font-semibold text-slate-600 dark:text-slate-300">Word</th>
+                  <th class="p-4 text-sm font-semibold text-slate-600 dark:text-slate-300">Topic</th>
+                  <th class="p-4 text-sm font-semibold text-slate-600 dark:text-slate-300">Recall</th>
+                  <th class="p-4 text-sm font-semibold text-slate-600 dark:text-slate-300">Mastery</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (stat of allWordStats(); track stat.wordItem.id) {
+                  <tr class="border-t border-slate-200 dark:border-slate-700">
+                    <td class="p-4 font-medium">{{ stat.wordItem.word }}</td>
+                    <td class="p-4 text-slate-500 dark:text-slate-400">{{ stat.topicName }}</td>
+                    <td class="p-4 text-slate-500 dark:text-slate-400">{{ stat.recallRate | percent:'1.0-0' }}</td>
+                    <td class="p-4">
+                      <div class="w-full bg-slate-200 dark:bg-slate-600 rounded-full h-2.5">
+                        <div class="bg-indigo-600 h-2.5 rounded-full" [style.width.%]="stat.mastery"></div>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        } @else {
+           <p class="text-center pb-8 text-slate-500 dark:text-slate-400">No practice history yet.</p>
+        }
+    </div>
+  </div>
+</div>

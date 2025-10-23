@@ -1,0 +1,149 @@
+@if (topic(); as currentTopic) {
+  <div class="space-y-6">
+    <div class="md:flex justify-between items-start">
+      <div>
+        <h2 class="text-3xl font-bold tracking-tight">{{ currentTopic.name }}</h2>
+        <p class="mt-1 text-slate-500 dark:text-slate-400">{{ currentTopic.description }}</p>
+      </div>
+      <div class="flex gap-2 mt-4 md:mt-0">
+        <button (click)="startPractice.emit()" [disabled]="currentTopic.vocabularies.length < 4" class="px-4 py-2 font-semibold text-white bg-green-500 rounded-lg shadow-md hover:bg-green-600 transition-colors disabled:bg-slate-400 disabled:cursor-not-allowed">
+          Practice
+        </button>
+        <button (click)="startFlashcards.emit()" [disabled]="!currentTopic.vocabularies.length" class="px-4 py-2 font-semibold text-white bg-blue-500 rounded-lg shadow-md hover:bg-blue-600 transition-colors disabled:bg-slate-400 disabled:cursor-not-allowed">
+          Flashcards
+        </button>
+      </div>
+    </div>
+
+    <div class="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden">
+      <div class="p-4 flex justify-between items-center border-b border-slate-200 dark:border-slate-700">
+        <h3 class="text-lg font-semibold">Vocabulary List</h3>
+        <div class="flex gap-2">
+          <button (click)="isImportModalOpen.set(true)" class="flex items-center gap-2 bg-teal-600 text-white font-semibold px-3 py-1.5 rounded-lg shadow-sm hover:bg-teal-700 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            </svg>
+            Import
+          </button>
+          <button (click)="openVocabModal()" class="flex items-center gap-2 bg-indigo-600 text-white font-semibold px-3 py-1.5 rounded-lg shadow-sm hover:bg-indigo-700 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+            </svg>
+            Add Word
+          </button>
+        </div>
+      </div>
+
+      @if (!currentTopic.vocabularies.length) {
+        <p class="text-center py-8 text-slate-500 dark:text-slate-400">This topic has no words yet. Add one to get started!</p>
+      } @else {
+        <div class="overflow-x-auto">
+          <table class="w-full text-left">
+            <thead class="bg-slate-50 dark:bg-slate-700/50">
+              <tr>
+                <th class="p-4 text-sm font-semibold text-slate-600 dark:text-slate-300">Word</th>
+                <th class="p-4 text-sm font-semibold text-slate-600 dark:text-slate-300 hidden md:table-cell">Phonetic</th>
+                <th class="p-4 text-sm font-semibold text-slate-600 dark:text-slate-300 hidden sm:table-cell">Part of Speech</th>
+                <th class="p-4 text-sm font-semibold text-slate-600 dark:text-slate-300">Meaning</th>
+                <th class="p-4 text-sm font-semibold text-slate-600 dark:text-slate-300">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of paginatedVocabularies(); track item.id) {
+                <tr class="border-b border-slate-200 dark:border-slate-700">
+                  <td class="p-4 font-medium">{{ item.word }}</td>
+                  <td class="p-4 text-slate-500 dark:text-slate-400 hidden md:table-cell">{{ item.phonetic }}</td>
+                  <td class="p-4 text-slate-500 dark:text-slate-400 hidden sm:table-cell">{{ item.partOfSpeech }}</td>
+                  <td class="p-4 text-slate-500 dark:text-slate-400">{{ item.meaning }}</td>
+                  <td class="p-4">
+                    <div class="flex gap-1">
+                      <button (click)="openVocabModal(item)" class="p-2 text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z" /></svg>
+                      </button>
+                      <button (click)="deleteItem(item.id)" class="p-2 text-slate-500 hover:text-red-600 dark:hover:text-red-500 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700">
+                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <!-- Pagination Controls -->
+        @if (totalPages() > 1) {
+          <div class="p-4 flex items-center justify-between border-t border-slate-200 dark:border-slate-700">
+            <button (click)="goToPage(currentPage() - 1)" [disabled]="currentPage() === 1" class="px-3 py-1 text-sm font-medium rounded-md bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 disabled:opacity-50 disabled:cursor-not-allowed">
+              Previous
+            </button>
+            <span class="text-sm text-slate-600 dark:text-slate-400">
+              Page {{ currentPage() }} of {{ totalPages() }}
+            </span>
+            <button (click)="goToPage(currentPage() + 1)" [disabled]="currentPage() === totalPages()" class="px-3 py-1 text-sm font-medium rounded-md bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 disabled:opacity-50 disabled:cursor-not-allowed">
+              Next
+            </button>
+          </div>
+        }
+      }
+    </div>
+  </div>
+} @else {
+  <p>Topic not found.</p>
+}
+
+<!-- Add/Edit Vocabulary Modal -->
+@if (isVocabModalOpen()) {
+  <div class="fixed inset-0 bg-black/60 flex items-center justify-center z-50" (click)="closeVocabModal()">
+    <div class="bg-white dark:bg-slate-800 rounded-lg shadow-2xl p-6 w-full max-w-lg" (click)="$event.stopPropagation()">
+      <h3 class="text-xl font-bold mb-4">{{ editingItem() ? 'Edit Word' : 'Add New Word' }}</h3>
+      <form (submit)="saveItem()">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Word</label>
+            <input type="text" [value]="word()" (input)="word.set($any($event.target).value)" class="mt-1 block w-full px-3 py-2 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm placeholder-slate-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Phonetic</label>
+            <input type="text" [value]="phonetic()" (input)="phonetic.set($any($event.target).value)" class="mt-1 block w-full px-3 py-2 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm placeholder-slate-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Part of Speech</label>
+            <input type="text" [value]="partOfSpeech()" (input)="partOfSpeech.set($any($event.target).value)" class="mt-1 block w-full px-3 py-2 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm placeholder-slate-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Meaning</label>
+            <textarea rows="3" [value]="meaning()" (input)="meaning.set($any($event.target).value)" class="mt-1 block w-full px-3 py-2 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm placeholder-slate-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required></textarea>
+          </div>
+        </div>
+        <div class="mt-6 flex justify-end gap-3">
+          <button type="button" (click)="closeVocabModal()" class="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-700 rounded-md hover:bg-slate-200 dark:hover:bg-slate-600">Cancel</button>
+          <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700">Save Word</button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- Import from Excel Modal -->
+@if (isImportModalOpen()) {
+  <div class="fixed inset-0 bg-black/60 flex items-center justify-center z-50" (click)="isImportModalOpen.set(false)">
+    <div class="bg-white dark:bg-slate-800 rounded-lg shadow-2xl p-6 w-full max-w-lg" (click)="$event.stopPropagation()">
+      <h3 class="text-xl font-bold mb-4">Import from Excel</h3>
+      <p class="text-slate-600 dark:text-slate-300 mb-4">
+        Select an `.xlsx` file to import vocabulary. The file must have four columns in this exact order:
+      </p>
+      <div class="bg-slate-100 dark:bg-slate-700 p-3 rounded-md mb-4">
+        <code class="text-sm font-mono">Word | Phonetic | Part of Speech | Meaning</code>
+      </div>
+      <p class="text-slate-600 dark:text-slate-300 mb-4">
+        The first row should be headers. Any rows with missing 'Word' or 'Meaning' will be skipped.
+      </p>
+      <div>
+        <label for="file-upload" class="w-full cursor-pointer bg-indigo-600 text-white font-semibold text-center px-4 py-2 rounded-lg shadow-md hover:bg-indigo-700 transition-colors inline-block">
+          Choose File...
+        </label>
+        <input id="file-upload" type="file" class="hidden" (change)="handleFileImport($event)" accept=".xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+      </div>
+    </div>
+  </div>
+}
