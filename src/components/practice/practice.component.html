@@ -6,8 +6,8 @@
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
         </svg>
-        <h2 class="mt-4 text-2xl font-bold text-slate-800 dark:text-slate-200">Generating Your Quiz</h2>
-        <p class="mt-2 text-slate-500 dark:text-slate-400">Please wait a moment...</p>
+        <h2 class="mt-4 text-2xl font-bold text-slate-800 dark:text-slate-200">{{ translationService.translate('generatingQuiz') }}</h2>
+        <p class="mt-2 text-slate-500 dark:text-slate-400">{{ translationService.translate('pleaseWait') }}</p>
       </div>
     }
     @case ('in_progress') {
@@ -20,7 +20,7 @@
         @if(currentQuestion(); as question) {
           <!-- Question Area -->
           <div class="text-center">
-            <p class="text-sm font-semibold text-primary-600 dark:text-primary-400">Question {{ currentQuestionIndex() + 1 }} of {{ questions().length }}</p>
+            <p class="text-sm font-semibold text-primary-600 dark:text-primary-400">{{ translationService.translate('question') }} {{ currentQuestionIndex() + 1 }} {{ translationService.translate('of') }} {{ questions().length }}</p>
             <h2 class="mt-2 text-2xl md:text-3xl font-bold text-slate-800 dark:text-slate-200">{{ question.questionText }}</h2>
           </div>
 
@@ -44,11 +44,11 @@
                        [disabled]="selectedAnswer() !== null"
                        [class]="getInputClass()"
                        class="block w-full text-center text-2xl p-4 rounded-lg shadow-inner transition-all duration-300"
-                       placeholder="Your answer...">
+                       [placeholder]="translationService.translate('yourAnswer')">
                 <button (click)="submitFillInBlank()" 
                         [disabled]="selectedAnswer() !== null || !fillInBlankAnswer()"
                         class="w-full sm:w-auto px-8 py-3 bg-primary-600 text-white font-semibold text-lg rounded-lg shadow-md hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                    Submit Answer
+                    {{ translationService.translate('submitAnswer') }}
                 </button>
                 @if (selectedAnswer() !== null) {
                     <div class="mt-2 text-center text-lg">
@@ -56,7 +56,7 @@
                            [class.dark:text-primary-400]="selectedAnswer()?.toLowerCase() === question.correctAnswer.toLowerCase()"
                            [class.text-red-600]="selectedAnswer()?.toLowerCase() !== question.correctAnswer.toLowerCase()"
                            [class.dark:text-red-400]="selectedAnswer()?.toLowerCase() !== question.correctAnswer.toLowerCase()">
-                            The correct answer is: <span class="font-bold block text-2xl mt-1">{{ question.correctAnswer }}</span>
+                            {{ translationService.translate('correctAnswerIs') }} <span class="font-bold block text-2xl mt-1">{{ question.correctAnswer }}</span>
                         </p>
                     </div>
                 }
@@ -67,9 +67,9 @@
     }
     @case ('finished') {
       <div class="text-center bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6 md:p-8 animate-fade-in">
-        <h2 class="text-4xl font-bold text-primary-600 dark:text-primary-400">Quiz Finished!</h2>
+        <h2 class="text-4xl font-bold text-primary-600 dark:text-primary-400">{{ translationService.translate('quizFinished') }}</h2>
         <p class="mt-4 text-2xl font-semibold text-slate-800 dark:text-slate-200">
-          Your Score: {{ score() }} / {{ questions().length }}
+          {{ translationService.translate('yourScore') }} {{ score() }} / {{ questions().length }}
         </p>
         <p class="mt-1 text-lg text-slate-500 dark:text-slate-400">
           @if(questions().length > 0){
@@ -79,21 +79,21 @@
 
         <!-- Review Answers -->
         <div class="mt-8 text-left">
-          <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-4">Review Your Answers</h3>
+          <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-4">{{ translationService.translate('reviewAnswers') }}</h3>
           <ul class="divide-y divide-slate-200 dark:divide-slate-700 max-h-60 overflow-y-auto pr-2">
             @for (question of questions(); track $index) {
               <li class="py-3">
                 <p class="font-semibold text-slate-700 dark:text-slate-300">{{ $index + 1 }}. {{ question.questionText }}</p>
                 @if (userAnswers()[$index].correct) {
                   <p class="text-green-600 dark:text-green-400">
-                    <span class="font-bold">Your answer:</span> {{ userAnswers()[$index].answer }} (Correct)
+                    <span class="font-bold">{{ translationService.translate('yourAnswerWas') }}</span> {{ userAnswers()[$index].answer }} {{ translationService.translate('correct') }}
                   </p>
                 } @else {
                   <p class="text-red-600 dark:text-red-400">
-                    <span class="font-bold">Your answer:</span> {{ userAnswers()[$index].answer }} (Incorrect)
+                    <span class="font-bold">{{ translationService.translate('yourAnswerWas') }}</span> {{ userAnswers()[$index].answer }} {{ translationService.translate('incorrect') }}
                   </p>
                   <p class="text-slate-500 dark:text-slate-400">
-                    <span class="font-bold">Correct answer:</span> {{ question.correctAnswer }}
+                    <span class="font-bold">{{ translationService.translate('correctAnswer') }}</span> {{ question.correctAnswer }}
                   </p>
                 }
               </li>
@@ -103,10 +103,10 @@
         
         <div class="mt-8 flex justify-center gap-4">
           <button (click)="restartQuiz()" class="px-6 py-3 bg-primary-600 text-white font-semibold rounded-lg shadow-md hover:bg-primary-700 transition-colors">
-            Try Again
+            {{ translationService.translate('tryAgain') }}
           </button>
           <button (click)="backToTopics.emit()" class="px-6 py-3 bg-slate-600 text-white font-semibold rounded-lg shadow-md hover:bg-slate-700 transition-colors">
-            Back to Dashboard
+            {{ translationService.translate('backToDashboard') }}
           </button>
         </div>
       </div>
