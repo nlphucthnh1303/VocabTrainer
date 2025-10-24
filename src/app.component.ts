@@ -7,7 +7,7 @@ import { PracticeComponent } from './components/practice/practice.component';
 import { DataService } from './services/data.service';
 import { TranslationService, type Language } from './services/translation.service';
 import type { Topic } from './models/vocabulary.model';
-
+import { AlertMessageComponent } from './components/alert-message/alert-message'; // Import
 export type View = 'dashboard' | 'topic' | 'flashcards' | 'practice';
 
 @Component({
@@ -15,7 +15,7 @@ export type View = 'dashboard' | 'topic' | 'flashcards' | 'practice';
   templateUrl: './app.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [DashboardComponent, TopicViewComponent, FlashcardsComponent, PracticeComponent],
+  imports: [DashboardComponent, TopicViewComponent, FlashcardsComponent, PracticeComponent, AlertMessageComponent],
 })
 export class AppComponent {
   private dataService = inject(DataService);
