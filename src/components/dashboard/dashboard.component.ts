@@ -4,6 +4,7 @@ import { DataService } from '../../services/data.service';
 import { TranslationService } from '../../services/translation.service';
 import type { Topic, Difficulty } from '../../models/vocabulary.model';
 import { ReportingComponent } from '../reporting/reporting.component';
+
 type DashboardView = 'topics' | 'reporting';
 
 @Component({
