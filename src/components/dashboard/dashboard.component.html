@@ -148,7 +148,7 @@
                     <label for="practice-ratio" class="block text-sm font-medium text-slate-700 dark:text-slate-300">{{ translationService.translate('questionRatio') }}</label>
                     <input id="practice-ratio" type="range" min="0" max="1" step="0.1" [value]="practiceRatio()" (input)="practiceRatio.set(+$event.target.value)" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-slate-700 accent-primary-600 mt-2">
                     <div class="flex justify-between text-xs text-slate-500 dark:text-slate-400 mt-1">
-                        <span>100% {{ translationService.translate('fillInTheBlank') }}</span>
+                        <span>{{ (1 - practiceRatio()) | percent:'1.0-0' }} {{ translationService.translate('fillInTheBlank') }}</span>
                         <span>{{ practiceRatio() | percent:'1.0-0' }} {{ translationService.translate('multipleChoice') }}</span>
                     </div>
                 </div>

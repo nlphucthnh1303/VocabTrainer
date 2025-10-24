@@ -277,12 +277,11 @@ export class TopicViewComponent {
 
   
     if (vocabularyData.length === 0 && parsedData.length > 0) {
-        // Xảy ra lỗi cấu trúc trong tất cả các mục
-        // Thông báo lỗi đã được đặt bên trong map()
         return;
     }
 
     // Cập nhật Signals và JSON output
+    this.jsonInput.set('');
     this.vocabularyArray.set(vocabularyData);
     this.jsonOutput = JSON.stringify(vocabularyData, null, 2);
     this.errorMessage.set('');

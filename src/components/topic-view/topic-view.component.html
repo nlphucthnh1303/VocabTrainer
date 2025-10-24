@@ -34,7 +34,7 @@
         <div class="flex justify-between items-center mb-4">
             <h3 class="text-xl font-bold text-slate-900 dark:text-white">{{ translationService.translate('vocabList') }} ({{ t.vocabularies.length }})</h3>
             <div class="flex gap-2">
-                <button (click)="isImportModalOpen.set(true)" class="px-3 py-2 text-sm bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 font-semibold rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">{{ translationService.translate('importFromExcel') }}</button>
+                <button (click)="isImportModalOpen.set(true)" class="px-3 py-2 text-sm bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 font-semibold rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">{{ translationService.translate('importFromJson') }}</button>
                 <button (click)="openVocabModal()" class="px-3 py-2 text-sm bg-primary-600 text-white font-semibold rounded-lg shadow-sm hover:bg-primary-700 transition-colors">{{ translationService.translate('addWord') }}</button>
             </div>
         </div>
