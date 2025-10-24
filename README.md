@@ -1,102 +1,96 @@
-<div align="center">
+
 <img width="1200" height="475" alt="GHBanner" src="https://firebasestorage.googleapis.com/v0/b/vietfurniture-38c34.appspot.com/o/image%2FScreenshot%20(136).png?alt=media&token=690c39fe-3d2c-4e78-a38e-a26e1bafa845" />
 
-📚 Vocabulary Trainer (Desktop App)
+1. Install dependencies: `npm install`
+2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
+3. Run the app: `npm run dev`
+# 📘 Vocabulary Trainer
 
-Vocabulary Trainer là một ứng dụng học từ vựng trên desktop (Electron) được xây dựng bằng Angular, cung cấp một môi trường học tập cá nhân hóa, mạnh mẽ, và tập trung vào dữ liệu. Ứng dụng hỗ trợ các phương pháp học hiện đại như Flashcard và Trắc nghiệm, đồng thời sử dụng hệ thống báo cáo chi tiết để giúp người dùng theo dõi và cải thiện vốn từ vựng của mình.
+A **desktop vocabulary learning application** built with **Angular** (frontend) and **Electron + Node.js** (runtime).  
+This app helps users **create topics, manage vocabulary, and practice words** using **flashcards, quizzes, and fill-in-the-blank exercises** — with local progress tracking and reporting.
 
-✨ Tính Năng Chính
+---
 
-Ứng dụng được thiết kế xoay quanh các tính năng sau:
+## 🧭 Overview
 
-1. Quản lý Chủ đề (Topics Management)
+**Vocabulary Trainer** is designed for English learners who want to:
+- Build personalized word lists grouped by topic.
+- Practice vocabulary interactively.
+- Track progress over time through detailed reports.
 
-Danh sách Chủ đề: Hiển thị tất cả các chủ đề (Topics) với tên, số lượng từ vựng, và cấp độ khó (Beginner, Intermediate, v.v.).
+The app operates fully offline after installation and stores all data locally using a relational database.
 
-Tham khảo ảnh:
+---
 
-Hành động Nhanh: Mỗi chủ đề có các nút hành động trực quan như Practice, Flashcards, và các nút cấu hình/chỉnh sửa.
+## ✨ Key Features
 
-Cấu hình Luyện tập (Practice Settings): Cho phép người dùng tùy chỉnh tỷ lệ loại câu hỏi (ví dụ: Fill-in-the-Blank so với Multiple Choice) từng chủ đề.
+### 🗂️ Topic Management
+- Create, edit, and delete topics.
+- Configure practice settings (ratio of multiple-choice vs fill-in-the-blank).
+- View topic summaries including word counts.
 
-Tham khảo ảnh:
+### 🧠 Vocabulary Management
+- Add new words manually with the following fields:
+  - **Word**
+  - **Phonetic transcription**
+  - **Part of Speech**
+  - **Meaning (Vietnamese translation)**
+- Edit or delete existing entries.
+- Import and export word lists from Excel (`.xlsx`).
+- View all vocabularies in a paginated table.
 
-2. Quản lý Từ vựng Chi tiết
+### 🎯 Practice Module
+- Practice through **Meaning → English** quizzes:
+  - **Multiple Choice:** “Which vocabulary word means *‘đáng kể’*?”
+  - **Fill-in-the-Blank:** “What word means *‘đáng kể’*?”
+- Adjustable question ratio (default: 50% MCQ / 50% Fill-in).
+- Visual and sound feedback on correct answers.
+- Randomized question generation.
 
-Chế độ xem Từ vựng: Hiển thị danh sách từ vựng chi tiết cho từng chủ đề, bao gồm Word, Phonetic, Part of Speech, và Meaning.
+### 🪧 Flashcard Mode
+- Flip cards to review words and meanings.
+- Pronunciation playback via **Text-to-Speech (TTS)**.
+- Navigate easily between cards with “Previous / Next” controls.
 
-Tham khảo ảnh:
+### 📊 Reporting & Analytics
+- Dashboard summarizing user performance:
+  - **Total sessions**, **mastery rate**, **recall accuracy**.
+  - Word-level statistics with **frequency**, **recall rate**, **next review date**.
+- Graphical progress visualization (charts and bars).
 
-Nhập Dữ liệu: Hỗ trợ nhập từ vựng một cách tiện lợi từ file CSV hoặc JSON (thông qua cơ chế IPC của Electron).
+---
+<img width="1200" height="475" alt="GHBanner" src="https://firebasestorage.googleapis.com/v0/b/vietfurniture-38c34.appspot.com/o/image%2FScreenshot%20(137).png?alt=media&token=aa2b2d96-e0a1-47c8-8fea-646ca678c609" />
 
-Thao tác CRUD: Dễ dàng thêm (Add New Word), chỉnh sửa (Edit), và xóa (Delete) từng từ vựng.
+## 💻 Technical Details
 
-Tham khảo ảnh:
+| Component | Technology |
+|------------|-------------|
+| **Frontend** | Angular 17+, Tailwind CSS |
+| **Backend / Runtime** | Node.js 20+ (Electron embedded) |
+| **Database** | Local PostgreSQL |
+| **External Services** | Google Text-to-Speech API, XLSX library |
+| **Packaging** | Electron (Windows, macOS, Linux) |
 
-3. Các Phương thức Luyện tập
+---
 
-Flashcard Mode: Hiển thị từng từ vựng, phiên âm (/prɒmɪs/), và cho phép người dùng lật thẻ để xem nghĩa.
+## ⚙️ Installation
 
-Tham khảo ảnh:
+### Prerequisites
+- Node.js ≥ 20
+- PostgreSQL installed locally
+- npm or yarn package manager
 
-Practice Mode (Trắc nghiệm/Điền từ):
+### Steps
+```bash
+# Clone repository
+git clone https://github.com/yourusername/vocabulary-trainer.git
+cd vocabulary-trainer
 
-Hỗ trợ đa dạng loại câu hỏi, bao gồm trắc nghiệm chọn nghĩa của từ.
-
-Cung cấp thanh tiến trình theo dõi số lượng câu hỏi đã hoàn thành (Ví dụ: Question 1 of 45).
-
-Tham khảo ảnh:
-
-4. Báo cáo Tiến độ (Progress Report - Đã đặc tả)
-
-Mặc dù không có ảnh chụp, ứng dụng được thiết kế để theo dõi các số liệu quan trọng như: Tỉ lệ thuộc từ (Mastery Rate), Từ cần ôn tập, và Lịch sử luyện tập chi tiết. Dữ liệu này được lưu trữ và truy vấn hiệu quả bằng SQLite.
-
-🛠️ Công Nghệ & Kiến Trúc
-
-Ứng dụng được xây dựng trên mô hình Hybrid Desktop sử dụng các công nghệ sau:
-
-Frontend (Renderer Process): Angular (TypeScript)
-
-Cung cấp giao diện người dùng hiện đại, tốc độ cao, và quản lý trạng thái phức tạp (như trạng thái luyện tập, SRS).
-
-Backend/Desktop Wrapper (Main Process): Electron (Node.js/JavaScript ES Module)
-
-Quản lý cửa sổ desktop, truy cập các API hệ thống (ví dụ: dialog để chọn file CSV), và là cầu nối an toàn cho CSDL.
-
-Giao tiếp: IPC (Inter-Process Communication)
-
-Sử dụng ipcMain và ipcRenderer để Frontend Angular gọi các hàm Node.js trong Main Process một cách bảo mật (nhờ contextIsolation và preload.js).
-
-Lưu trữ Dữ liệu: SQLite (File-based Local Database)
-
-Lưu trữ tất cả dữ liệu từ vựng, chủ đề, và kết quả luyện tập vào một file cục bộ duy nhất (.db), đảm bảo hiệu suất truy vấn nhanh cần thiết cho tính năng SRS và Báo cáo, đồng thời đáp ứng yêu cầu lưu trữ dựa trên File của ứng dụng desktop.
-
-🚀 Hướng dẫn Cài đặt & Chạy ứng dụng
-
-Yêu cầu Tiên quyết
-
-Node.js (v20.19+ hoặc v22.12+)
-
-npm (Thường đi kèm với Node.js)
-
-Các Bước Thực hiện
-
-Cài đặt Dependencies:
-
+# Install dependencies
 npm install
-npm install csv-parser # Cần thiết cho tính năng nhập CSV
-# Cần phải cài đặt SQLite3 sau khi hoàn tất các bước cấu hình DB
 
+# Run development server
+npm run start
 
-
-Khởi động Ứng dụng:
-Chạy lệnh script đã cấu hình trong package.json để thực hiện cả Angular build và khởi động Electron:
-
-npm run electron
-
-
-
-(Lệnh này chạy ng build --base-href ./ sau đó là electron .)
-
-Bắt đầu Nhập Dữ liệu:
-Sau khi ứng dụng khởi chạy, bạn có thể sử dụng tính năng Import để tải dữ liệu từ vựng ban đầu từ file CSV/JSON vào Local Database (SQLite).
+# Build desktop app
+npm run electron:build
