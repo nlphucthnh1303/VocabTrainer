@@ -1,11 +1,9 @@
 <div align="center">
 <img width="1200" height="475" alt="GHBanner" src="https://firebasestorage.googleapis.com/v0/b/vietfurniture-38c34.appspot.com/o/image%2FScreenshot%20(136).png?alt=media&token=690c39fe-3d2c-4e78-a38e-a26e1bafa845" />
 
-1. Install dependencies:
-   `npm install`
+1. Install dependencies: `npm install`
 2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+3. Run the app: `npm run dev`
 # 📘 Vocabulary Trainer
 
 A **desktop vocabulary learning application** built with **Angular** (frontend) and **Electron + Node.js** (runtime).  
