@@ -2,6 +2,7 @@ import { signal, effect, Injectable, inject } from '@angular/core';
 import type { Topic, VocabularyItem, PracticeAttempt, Difficulty } from '../models/vocabulary.model';
 import { TopicService } from './topic.service';
 import { AlertService } from './alert.service';
+import { VocabularyService } from './vocabulary.service';
 @Injectable({
   providedIn: 'root',
 })
@@ -9,20 +10,21 @@ export class DataService {
   topics = signal<Topic[]>([]);
   practiceHistory = signal<PracticeAttempt[]>([]);
   private topicService = inject(TopicService);
+  private vocabularyService = inject(VocabularyService);
   constructor(private alertService: AlertService) {
-     this.topicService.getItems().subscribe((data: Topic[]) => {
+    this.topicService.getItems().subscribe((data: Topic[]) => {
       this.topics.set(data);
       console.log('data topics from Firestore:', data);
     });
     effect(() => {
-        if (typeof window !== 'undefined' && window.localStorage) {
-          try {
-            localStorage.setItem('vocab-topics', JSON.stringify(this.topics()));
-            localStorage.setItem('vocab-history', JSON.stringify(this.practiceHistory()));
-          } catch (e) {
-            console.error('Could not write to localStorage.', e);
-          }
+      if (typeof window !== 'undefined' && window.localStorage) {
+        try {
+          localStorage.setItem('vocab-topics', JSON.stringify(this.topics()));
+          localStorage.setItem('vocab-history', JSON.stringify(this.practiceHistory()));
+        } catch (e) {
+          console.error('Could not write to localStorage.', e);
         }
+      }
     });
   }
 
@@ -45,25 +47,29 @@ export class DataService {
   }
 
   updateTopic(topicId: string, name: string, description: string, difficulty: Difficulty) {
-    const updateTopic: Topic = {
-      id: topicId,
-      name: name,
-      description: description,
-      difficulty: difficulty,
-      vocabularies: [],
-      practiceRatio: 0.5, // Default to 50% MCQ
-    };
-    this.topicService.updateItem(topicId,updateTopic).then(() => {
+    let topic = this.topics().find(t => t.id === topicId);
+    if (topic) {
+      topic.name = name;
+      topic.description = description;
+      topic.difficulty = difficulty;  
+      topic.vocabularies = topic.vocabularies;
+      topic.practiceRatio = topic.practiceRatio;
+    } 
+    this.topicService.updateItem(topicId, topic).then(() => {
       this.alertService.show('success', 'Dữ liệu đã được lưu thành công!');
     }).catch((error) => {
       console.error('Error creating topic in Firestore:', error);
     });
   }
 
-  updateTopicSettings(topicId: string, settings: { practiceRatio: number }) {
-    this.topics.update(topics =>
-      topics.map(t => t.id === topicId ? { ...t, practiceRatio: settings.practiceRatio } : t)
-    );
+  updateTopicSettings(topic: Topic, settings: { practiceRatio: number }) {
+    
+    topic.practiceRatio = settings.practiceRatio;
+    this.topicService.updateItem(topic.id, topic).then(() => {
+      this.alertService.show('success', 'Dữ liệu đã được lưu thành công!');
+    }).catch((error) => {
+      console.error('Error creating topic in Firestore:', error);
+    });
   }
 
   deleteTopic(topicId: string) {
@@ -81,42 +87,47 @@ export class DataService {
 
   addVocabularyItem(topicId: string, item: Omit<VocabularyItem, 'id'>) {
     const newItem: VocabularyItem = { ...item, id: crypto.randomUUID() };
-    this.topics.update(topics => 
-      topics.map(t => 
-        t.id === topicId 
-          ? { ...t, vocabularies: [...t.vocabularies, newItem] } 
-          : t
-      )
-    );
+    let topic = this.topics().find(t => t.id === topicId);
+    this.vocabularyService.createItem(newItem).then((res) => {
+      topic.vocabularies.push(res)
+      this.topicService.updateItem(topic.id, topic).then(() => {
+        this.alertService.show('success', 'Dữ liệu đã được lưu thành công!');
+      }).catch((error) => {
+        console.error('Error creating topic in Firestore:', error);
+      });
+    }).catch((error) => {
+      console.error('Error creating vocabulary item in Firestore:', error);
+    });
   }
 
   updateVocabularyItem(topicId: string, updatedItem: VocabularyItem) {
-    this.topics.update(topics => 
-      topics.map(t => {
-        if (t.id === topicId) {
-          return {
-            ...t,
-            vocabularies: t.vocabularies.map(v => v.id === updatedItem.id ? updatedItem : v)
-          };
-        }
-        return t;
-      })
-    );
+    let topic = this.topics().find(t => t.id === topicId);
+    if(topic) {
+      this.vocabularyService.updateItem(updatedItem.id, updatedItem).then(() => {
+        this.alertService.show('success', 'Dữ liệu đã được lưu thành công!');
+      }).catch((error) => {
+        console.error('Error creating topic in Firestore:', error);
+        this.alertService.show('error', 'Dữ liệu đã được không lưu thành công!');
+      });
+    }
   }
 
   deleteVocabularyItem(topicId: string, itemId: string) {
-    this.topics.update(topics => 
-      topics.map(t => {
-        if (t.id === topicId) {
-          return { ...t, vocabularies: t.vocabularies.filter(v => v.id !== itemId) };
-        }
-        return t;
-      })
-    );
+    this.vocabularyService.deleteItem(itemId).then(() => {
+      let topic = this.topics().find(t => t.id === topicId);
+      topic.vocabularies = topic.vocabularies.filter(v => v !== itemId);
+      this.topicService.updateItem(topicId, topic).then(() => {
+        this.alertService.show('success', 'Xóa dữ liệu đã được lưu thành công!');
+      }).catch((error) => {
+        console.error('Error creating topic in Firestore:', error);
+      });
+    }).catch((error) => {
+      console.error('Error creating topic in Firestore:', error);
+    });
     // Also clear history for the deleted word
     this.practiceHistory.update(history => history.filter(h => h.wordId !== itemId));
   }
-  
+
   // --- Practice History ---
   logPracticeAttempt(attempt: PracticeAttempt) {
     this.practiceHistory.update(history => [...history, attempt]);
@@ -130,13 +141,7 @@ export class DataService {
         description: 'A collection of frequently used verbs in English.',
         practiceRatio: 0.5,
         difficulty: 'Beginner',
-        vocabularies: [
-          { id: 'v1', word: 'run', phonetic: '/rʌn/', partOfSpeech: 'verb', meaning: 'move at a speed faster than a walk' },
-          { id: 'v2', word: 'eat', phonetic: '/iːt/', partOfSpeech: 'verb', meaning: 'put (food) into the mouth and chew and swallow it' },
-          { id: 'v3', word: 'sleep', phonetic: '/sliːp/', partOfSpeech: 'verb', meaning: 'be in a state of rest' },
-          { id: 'v4', word: 'think', phonetic: '/θɪŋk/', partOfSpeech: 'verb', meaning: 'have a particular opinion, belief, or idea' },
-          { id: 'v5', word: 'talk', phonetic: '/tɔːk/', partOfSpeech: 'verb', meaning: 'speak in order to give information or express ideas' },
-        ]
+        vocabularies: []
       },
       {
         id: 'sample-2',
@@ -144,11 +149,7 @@ export class DataService {
         description: 'Vocabulary related to computers and the internet.',
         practiceRatio: 0.7,
         difficulty: 'Intermediate',
-        vocabularies: [
-          { id: 'v6', word: 'algorithm', phonetic: '/ˈælɡərɪðəm/', partOfSpeech: 'noun', meaning: 'a process or set of rules to be followed in calculations' },
-          { id: 'v7', word: 'database', phonetic: '/ˈdeɪtəbeɪs/', partOfSpeech: 'noun', meaning: 'a structured set of data held in a computer' },
-          { id: 'v8', word: 'network', phonetic: '/ˈnetwɜːk/', partOfSpeech: 'noun', meaning: 'a group or system of interconnected people or things' },
-        ]
+        vocabularies: []
       }
     ];
   }

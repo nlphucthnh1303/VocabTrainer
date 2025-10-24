@@ -4,6 +4,7 @@ import type { Topic, VocabularyItem, PracticeAttempt } from '../../models/vocabu
 import { DataService } from '../../services/data.service';
 import { GeminiService } from '../../services/gemini.service';
 import { TranslationService } from '../../services/translation.service';
+import { VocabularyService } from '@/src/services/vocabulary.service';
 
 interface QuizQuestion {
   type: 'mcq' | 'fill-in-the-blank';
@@ -26,7 +27,7 @@ type QuizState = 'generating'| 'in_progress' | 'finished';
 export class PracticeComponent implements OnInit {
   topic = input.required<Topic>();
   backToTopics = output<void>();
-
+  public vocabularyService = inject(VocabularyService);
   private dataService = inject(DataService);
   private geminiService = inject(GeminiService);
   private platformId = inject(PLATFORM_ID);
@@ -58,15 +59,39 @@ export class PracticeComponent implements OnInit {
     if (isPlatformBrowser(this.platformId)) {
       this.audioContext = new AudioContext();
     }
+      
   }
 
   ngOnInit() {
-    this.generateQuestions();
+    this.loadVocabularies();
   }
+
+  vocabulariesWithDetails = signal([]);
+  loadVocabularies() {
+      // Lấy ID từ vựng từ topic()
+      const vocabIDs = this.topic()?.vocabularies ?? []; 
+      this.vocabularyService.getItems().subscribe(data => {
+          const mergedVocabs = [];
+          // Lặp qua các ID và tìm chi tiết từ 'data'
+          vocabIDs.forEach(vocabId => {
+              const itemDetail = data.find(item => item.id === vocabId);
+              if (itemDetail) {
+                  mergedVocabs.push(itemDetail); 
+              }
+          });
+          // Cập nhật Signal sau khi hợp nhất dữ liệu
+          this.vocabulariesWithDetails.set(mergedVocabs); 
+          console.log('Vocabulary items loaded and merged:', mergedVocabs);
+          this.generateQuestions();
+      });
+  }
+
+
+
 
   async generateQuestions() {
     this.quizState.set('generating');
-    const topicVocab = [...this.topic().vocabularies];
+    const topicVocab = [...this.vocabulariesWithDetails() as VocabularyItem[]];
     const shuffledVocab = this.shuffleArray(topicVocab);
     const quizQuestions: QuizQuestion[] = [];
 

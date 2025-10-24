@@ -85,7 +85,7 @@ export class DashboardComponent {
 
   saveTopicSettings() {
     if (this.settingsTopic()) {
-      this.dataService.updateTopicSettings(this.settingsTopic()!.id, { practiceRatio: this.practiceRatio() });
+      this.dataService.updateTopicSettings(this.settingsTopic(), { practiceRatio: this.practiceRatio() });
     }
     this.closeSettingsModal();
   }

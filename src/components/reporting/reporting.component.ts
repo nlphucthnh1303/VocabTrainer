@@ -112,7 +112,7 @@ export class ReportingComponent {
   difficultWords = computed(() => {
     const history = this.practiceHistory();
     const topics = this.topics();
-    const allVocab = topics.flatMap(t => t.vocabularies.map(v => ({...v, topicName: t.name})));
+    const allVocab = topics.flatMap(t => t.vocabularies.map(v => ({v, topicName: t.name})));
     
     const wordStats = new Map<string, { correct: number, total: number }>();
 
@@ -126,12 +126,10 @@ export class ReportingComponent {
     }
     
     const statsArray = Array.from(wordStats.entries()).map(([wordId, stats]) => {
-      const vocabItem = allVocab.find(v => v.id === wordId);
+      const vocabItem = allVocab.find(v => v.v === wordId);
       if (!vocabItem) return null;
       
       return {
-        word: vocabItem.word,
-        topicName: vocabItem.topicName,
         correct: stats.correct,
         total: stats.total,
         accuracy: stats.total > 0 ? stats.correct / stats.total : 0,

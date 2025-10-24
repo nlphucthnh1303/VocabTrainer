@@ -60,8 +60,8 @@ export class TranslationService {
       editWordTitle: 'Edit Word',
       addWordTitle: 'Add New Word',
       saveWord: 'Save Word',
-      importModalTitle: 'Import from Excel',
-      importModalDesc: 'Select an .xlsx file with your vocabulary. The file must have four columns in this exact order:',
+      importModalTitle: 'Import from json',
+      importModalDesc: 'Select an .json file with your vocabulary. The file must have four columns in this exact order:',
       importModalUpload: 'Click to upload a file',
       deleteWordConfirm: 'Are you sure you want to delete this word? Its practice history will also be removed.',
       topicNotFound: 'Topic not found.',
@@ -95,6 +95,15 @@ export class TranslationService {
       performanceByTopic: 'Performance by Topic',
       wordsToReview: 'Words to Review',
       wordsToReviewDesc: "Top 5 words you've had the most trouble with.",
+      
+      partOfSpeech_Noun: "Noun",
+      partOfSpeech_Verb: "Verb",
+      partOfSpeech_Adjective: "Adjective",
+      partOfSpeech_Adverb: "Adverb",
+      partOfSpeech_Pronoun: "Pronoun",
+      partOfSpeech_Preposition: "Preposition",
+      partOfSpeech_Conjunction: "Conjunction",
+      partOfSpeech_Gerund: "Gerund"
     },
     vi: {
       // App
@@ -147,8 +156,8 @@ export class TranslationService {
       editWordTitle: 'Sửa từ',
       addWordTitle: 'Thêm từ mới',
       saveWord: 'Lưu từ',
-      importModalTitle: 'Nhập từ Excel',
-      importModalDesc: 'Chọn một tệp .xlsx chứa từ vựng của bạn. Tệp phải có bốn cột theo đúng thứ tự này:',
+      importModalTitle: 'Nhập từ json',
+      importModalDesc: 'Chọn mã .json chứa từ vựng của bạn. Tệp phải có bốn cột theo đúng thứ tự này:',
       importModalUpload: 'Nhấp để tải lên một tệp',
       deleteWordConfirm: 'Bạn có chắc muốn xóa từ này không? Lịch sử luyện tập của nó cũng sẽ bị xóa.',
       topicNotFound: 'Không tìm thấy chủ đề.',
@@ -182,6 +191,15 @@ export class TranslationService {
       performanceByTopic: 'Hiệu suất theo chủ đề',
       wordsToReview: 'Các từ cần ôn tập',
       wordsToReviewDesc: '5 từ hàng đầu mà bạn gặp khó khăn nhất.',
+
+      partOfSpeech_Noun: "Danh từ",
+      partOfSpeech_Verb: "Động từ",
+      partOfSpeech_Adjective: "Tính từ",
+      partOfSpeech_Adverb: "Trạng từ",
+      partOfSpeech_Pronoun: "Đại từ",
+      partOfSpeech_Preposition: "Giới từ",
+      partOfSpeech_Conjunction: "Liên từ",
+      partOfSpeech_Gerund: "Danh động từ"
     },
   };
 
